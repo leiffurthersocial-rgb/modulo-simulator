@@ -27,4 +27,17 @@ data/         Content: events, countries, careers, friends, config
 tests/        Vitest tests for the engine
 ```
 
-The engine never imports from `app/`, `components/`, or `store/`. Content in `data/` only depends on engine *types* and authoring helpers.
+The engine never imports from `app/`, `components/`, or `store/`. Content (events, countries, friends) reaches it through a `Content` bundle (`data/index.ts` → `DEFAULT_CONTENT`), so tests can inject their own. The engine reads only the tunables in `data/config.ts` and a couple of flavor tables directly.
+
+## Engine at a glance
+
+```ts
+import { DEFAULT_CONTENT } from "@/data";
+import { newLife, ageUp, choose } from "@/engine";
+
+let s = newLife(DEFAULT_CONTENT, { seed: "abc" }); // deterministic per seed
+s = ageUp(s, DEFAULT_CONTENT);                      // pure: returns a new state
+if (s.pending[0]) s = choose(s, DEFAULT_CONTENT, s.pending[0].uid, s.pending[0].choices[0]!.id);
+```
+
+`GameState` is plain JSON (the RNG state is a single number on it), so saves, export/import and rewinds are just snapshots.
