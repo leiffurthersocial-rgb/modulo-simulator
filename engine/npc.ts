@@ -2,6 +2,7 @@ import { fitAppearanceToGender, randomAppearance } from "./appearance";
 import type { Rng } from "./rng";
 import {
   PERSONALITY_TRAITS,
+  type Attraction,
   type Appearance,
   type Country,
   type GameState,
@@ -15,6 +16,11 @@ import { pronounsFor } from "./util";
 
 export function randomGender(rng: Rng): Gender {
   return rng.chance(0.5) ? "male" : "female";
+}
+
+/** A gender the player is attracted to. */
+export function attractedGender(rng: Rng, attraction: Attraction): Gender {
+  return attraction === "men" ? "male" : attraction === "women" ? "female" : randomGender(rng);
 }
 
 export function randomFirstName(rng: Rng, country: Country, gender: Gender): string {

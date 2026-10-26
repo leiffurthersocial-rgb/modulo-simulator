@@ -5,7 +5,7 @@ import { addLog } from "./log";
 import { postProcess } from "./postProcess";
 import type { Rng } from "./rng";
 import { Rng as RngClass } from "./rng";
-import type { ActionParams, EventContext, GameAction, GameState, Notice } from "./types";
+import type { ActionOption, ActionParams, EventContext, GameAction, GameState, Notice } from "./types";
 
 export function findAction(content: Content, id: string): GameAction | undefined {
   return content.actions.find((a) => a.id === id);
@@ -18,6 +18,8 @@ export interface ActionView {
   /** Why it can't be used right now, if it can't. */
   blocked?: string;
   cost?: number;
+  /** Params the view was listed with (e.g. the NPC for people actions). */
+  params?: ActionParams;
 }
 
 function usesLeft(action: GameAction, state: GameState): number {
@@ -55,6 +57,14 @@ export function listActions(
     });
 }
 
+/** Options for a picker action, resolved against the current state. */
+export function actionOptions(state: GameState, content: Content, actionId: string, params: ActionParams = {}): ActionOption[] {
+  const action = findAction(content, actionId);
+  if (!action?.options) return [];
+  const npc = typeof params.npcId === "string" ? state.npcs[params.npcId] : undefined;
+  return action.options(makeContext(state, new RngClass(state.rngState), content, npc, { ...params }), params);
+}
+
 export function pushNotice(state: GameState, rng: Rng, notice: Omit<Notice, "id">): void {
   state.notices.push({ ...notice, id: rng.id("ntc_") });
 }
@@ -68,6 +78,10 @@ export function performAction(prev: GameState, content: Content, actionId: strin
   const npc = typeof params.npcId === "string" ? state.npcs[params.npcId] : undefined;
   const ctx = makeContext(state, rng, content, npc, { ...params });
   if ((action.visible && !action.visible(ctx)) || blockedReason(action, ctx, params)) return prev;
+  if (action.options && typeof params.option === "string") {
+    const opt = action.options(ctx, params).find((o) => o.id === params.option);
+    if (!opt || opt.blocked) return prev;
+  }
 
   state.actionsThisYear[action.id] = (state.actionsThisYear[action.id] ?? 0) + 1;
   const result = action.run(ctx, params);

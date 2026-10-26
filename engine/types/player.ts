@@ -226,11 +226,15 @@ export interface Pregnancy {
 export const WEALTH_TIERS = ["poor", "working", "middle", "upper", "rich"] as const;
 export type WealthTier = (typeof WEALTH_TIERS)[number];
 
+export type Attraction = "men" | "women" | "everyone";
+
 export interface Player {
   firstName: string;
   lastName: string;
   gender: Gender;
   pronouns: Pronouns;
+  /** Who romance events and dating draw from. */
+  attraction: Attraction;
   age: number;
   birthYear: number;
   countryId: CountryId;

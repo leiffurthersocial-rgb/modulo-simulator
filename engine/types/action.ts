@@ -23,6 +23,18 @@ export type ActionSection =
 
 export type ActionParams = Record<string, string | number>;
 
+/** One choice in an action's picker (a college program, a job opening, a car for sale). */
+export interface ActionOption {
+  id: string;
+  label: string;
+  description?: string;
+  /** Already country-scaled money shown on the row. */
+  price?: number;
+  /** Shown disabled with this reason. */
+  blocked?: string;
+  icon?: string;
+}
+
 export interface ActionResult {
   title?: string;
   text: string;
@@ -50,6 +62,11 @@ export interface GameAction {
   blocked?: (ctx: EventContext, params: ActionParams) => string | undefined;
   /** Max uses per year. */
   perYear?: number;
+  /**
+   * If present, the UI shows these as a picker first and runs the action with
+   * params.option set to the chosen id.
+   */
+  options?: (ctx: EventContext, params: ActionParams) => ActionOption[];
   /** Custom UI that collects input before running (e.g. "blackjack"). */
   ui?: string;
   /** Cost shown on the button (US-baseline money, scaled by country). */

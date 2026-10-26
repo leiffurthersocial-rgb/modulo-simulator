@@ -1,6 +1,6 @@
 import type { Content } from "../content";
 import type { Rng } from "../rng";
-import type { Amount, EventId, FlagValue, NpcId, SkillKey, StatKey } from "./common";
+import type { Amount, EventId, FlagValue, Gender, NpcId, SkillKey, StatKey } from "./common";
 import type { Country } from "./country";
 import type { Npc, NpcRole } from "./npc";
 import type { AddictionKind, Player } from "./player";
@@ -94,6 +94,8 @@ export type NpcBinding =
       ageOffset?: readonly [number, number];
       /** Absolute age range; overrides ageOffset. */
       age?: readonly [number, number];
+      /** "attracted" picks a gender the player is attracted to (romance). Default random. */
+      gender?: Gender | "attracted";
       /** Starting closeness. Default 50. */
       closeness?: Amount;
       /** Whether the new NPC joins the relationship list (default true). False = one-off stranger. */

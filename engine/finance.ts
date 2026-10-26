@@ -63,7 +63,9 @@ export function runFinanceYear(state: GameState, country: Country): FinanceSumma
 
   const income = job && !inPrison ? Math.round(job.salary) : 0;
   const tax = incomeTax(income, country.taxBrackets);
-  const adultOnOwn = player.age >= 18 && !player.livesWithParents && !inPrison;
+  // College housing is folded into tuition.
+  const inHigherEd = player.education.enrolled !== undefined && !["elementary", "middle", "high"].includes(player.education.enrolled.level);
+  const adultOnOwn = player.age >= 18 && !player.livesWithParents && !inPrison && !inHigherEd;
   const ownsHome = player.assets.some((a) => a.kind === "house" && !a.rentedOut);
   const living = adultOnOwn ? livingCost(country, ownsHome) : 0;
   const upkeep = player.assets.reduce((sum, a) => sum + a.yearlyUpkeep, 0);

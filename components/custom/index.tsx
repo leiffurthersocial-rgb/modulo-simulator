@@ -1,6 +1,7 @@
 "use client";
 
 import type { ActionView, GameState } from "@/engine";
+import { OptionPicker } from "./OptionPicker";
 
 export interface CustomUiProps {
   state: GameState;
@@ -23,5 +24,7 @@ export function registerCustomUi(key: string, ui: CustomUi): void {
 export function CustomUiHost(props: CustomUiProps) {
   const key = (props.view.action.ui ?? "").split(":")[0] ?? "";
   const Ui = REGISTRY[key];
-  return Ui ? <Ui {...props} /> : null;
+  if (Ui) return <Ui {...props} />;
+  if (props.view.action.options) return <OptionPicker {...props} params={props.view.params} />;
+  return null;
 }

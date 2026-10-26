@@ -5,7 +5,8 @@ import { EventRegistry, validateEvents } from "@/engine/events/registry";
 import { isEligible } from "@/engine/events/select";
 import { fillPlaceholders, renderText } from "@/engine/events/template";
 import { createNpc } from "@/engine/npc";
-import type { GameEvent } from "@/engine/types";
+import { applyEffects } from "@/engine/events/effects";
+import type { GameEvent, TextTemplate } from "@/engine/types";
 import { ctxFor, lifeAtAge } from "./fixtures";
 
 const base: GameEvent = { id: "e", category: "random", ages: [5, 10], text: "Hi." };
@@ -99,18 +100,29 @@ describe("templates", () => {
   });
 
   it("every shipped event renders without leftover placeholders", () => {
-    const s = lifeAtAge(30);
-    const ctx = ctxFor(s);
-    ctx.npc = createNpc(s, ctx.rng, ctx.country, { role: "friend", age: 30 });
-    ctx.vars.amount = 100;
-    const texts = ALL_EVENTS.flatMap((e) => [
-      e.text,
-      ...(e.title ? [e.title] : []),
-      ...(e.choices ?? []).flatMap((c) => [c.label, ...c.outcomes.flatMap((o) => (o.text ? [o.text] : []))]),
-    ]);
-    for (const t of texts) {
-      const variants = typeof t === "string" ? [t] : typeof t === "function" ? [] : t;
-      for (const v of variants) expect(renderText(v, ctx), v).not.toMatch(/[{}]/);
+    // Mirror the real order: an event's effects run before its text, an outcome's effects before its text.
+    const base = lifeAtAge(30);
+    base.player.education.enrolled = { level: "college", institution: "Test U", major: "History", year: 1, length: 4, performance: 50, tuitionPerYear: 0, scholarship: false };
+    for (const e of ALL_EVENTS) {
+      const s = structuredClone(base);
+      const ctx = ctxFor(s);
+      ctx.npc = createNpc(s, ctx.rng, ctx.country, { role: "friend", age: 30 });
+      ctx.vars.amount = 100;
+      applyEffects(e.effects, ctx);
+      const check = (t: TextTemplate | undefined) => {
+        if (t === undefined) return;
+        const variants = typeof t === "string" || typeof t === "function" ? [t] : t;
+        for (const v of variants) expect(renderText(v, ctx), `${e.id}: ${String(v)}`).not.toMatch(/[{}]/);
+      };
+      check(e.text);
+      check(e.title);
+      for (const c of e.choices ?? []) {
+        check(c.label);
+        for (const o of c.outcomes) {
+          applyEffects(o.effects, ctx);
+          check(o.text);
+        }
+      }
     }
   });
 });

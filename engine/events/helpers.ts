@@ -161,4 +161,28 @@ export const when = {
     (usd: number): Predicate =>
     ({ player, country }) =>
       player.finance.cash >= usd * country.costIndex,
+  club:
+    (id?: string): Predicate =>
+    ({ state }) =>
+      id === undefined ? typeof state.flags.club === "string" : state.flags.club === id,
+  hasPartner: ((ctx) =>
+    Object.values(ctx.state.npcs).some((n) => n.alive && n.inContact && (n.role === "partner" || n.role === "spouse" || n.role === "fiance"))) as Predicate,
+  single: ((ctx) =>
+    !Object.values(ctx.state.npcs).some((n) => n.alive && n.inContact && (n.role === "partner" || n.role === "spouse" || n.role === "fiance"))) as Predicate,
+  married: ((ctx) => Object.values(ctx.state.npcs).some((n) => n.alive && n.inContact && n.role === "spouse")) as Predicate,
+  hasKids: ((ctx) => Object.values(ctx.state.npcs).some((n) => n.role === "child" && n.alive)) as Predicate,
+  movedOut: ((ctx) => !ctx.player.livesWithParents) as Predicate,
+  inPrison: ((ctx) => ctx.player.crime.prison !== undefined) as Predicate,
+  hasJobIn:
+    (...careerIds: string[]): Predicate =>
+    ({ player }) =>
+      player.career.job !== undefined && careerIds.includes(player.career.job.careerId),
+  richerThan:
+    (usd: number): Predicate =>
+    ({ player, country }) =>
+      player.finance.cash >= usd * country.costIndex,
+  poorerThan:
+    (usd: number): Predicate =>
+    ({ player, country }) =>
+      player.finance.cash < usd * country.costIndex,
 };

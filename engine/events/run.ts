@@ -1,7 +1,7 @@
 import { claimCameoSlot, spawnFriendNpc } from "../cameos";
 import type { Content } from "../content";
 import { addLog } from "../log";
-import { activeNpcs, createNpc } from "../npc";
+import { activeNpcs, attractedGender, createNpc } from "../npc";
 import type { Rng } from "../rng";
 import type { EventContext, GameEvent, GameState, Npc, NpcBinding, NpcId, TemplateVars } from "../types";
 import { rollAmount } from "../util";
@@ -17,7 +17,9 @@ function bindNpc(binding: NpcBinding, ctx: EventContext, content: Content): Npc 
   }
   const closeness = Math.round(rollAmount(rng, binding.closeness ?? 50));
   const keep = binding.keep ?? true;
-  if (keep && (binding.allowCameo ?? true)) {
+  const gender = binding.gender === "attracted" ? attractedGender(rng, player.attraction) : binding.gender;
+  // Friends are male; they only take romance slots if the config allows that role anyway.
+  if (keep && (binding.allowCameo ?? true) && (gender === undefined || gender === "male")) {
     const friend = claimCameoSlot(state, rng, content, binding.role);
     if (friend) return spawnFriendNpc(state, rng, country, friend, binding.role, closeness);
   }
@@ -25,6 +27,7 @@ function bindNpc(binding: NpcBinding, ctx: EventContext, content: Content): Npc 
   return createNpc(state, rng, country, {
     role: binding.role,
     age: rng.int(lo ?? 0, hi ?? 0),
+    gender,
     closeness,
     inContact: keep,
     tags: keep ? [] : ["oneOff"],

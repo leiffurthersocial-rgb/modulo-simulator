@@ -84,7 +84,15 @@ function resolveKey(key: string, ctx: EventContext): string | undefined {
 }
 
 export function fillPlaceholders(text: string, ctx: EventContext): string {
-  return text.replace(/\{([^{}]+)\}/g, (match, key: string) => resolveKey(key, ctx) ?? match);
+  // Innermost placeholders resolve first, so variations may contain placeholders: {a|{npc} b}.
+  let out = text;
+  for (let pass = 0; pass < 4; pass++) {
+    const next = out.replace(/\{([^{}]+)\}/g, (match, key: string) => resolveKey(key, ctx) ?? `\u0000${key}\u0001`);
+    if (next === out) break;
+    out = next;
+  }
+  // Restore unknown placeholders untouched.
+  return out.replace(/\u0000/g, "{").replace(/\u0001/g, "}");
 }
 
 export function renderText(template: TextTemplate, ctx: EventContext): string {

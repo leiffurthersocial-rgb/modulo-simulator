@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Avatar } from "@/components/avatar/Avatar";
 import { Row, Section, Sheet } from "@/components/ui/Sheet";
-import { peopleGroups, roleLabel, type GameState, type Npc } from "@/engine";
+import { peopleGroups, roleLabel, type ActionView, type GameState, type Npc } from "@/engine";
 import { ActionList, groupsOf } from "./ActionList";
 
 function Closeness({ value }: { value: number }) {
@@ -16,7 +16,7 @@ function Closeness({ value }: { value: number }) {
   );
 }
 
-export function PersonPanel({ state, npc, onClose }: { state: GameState; npc: Npc; onClose: () => void }) {
+export function PersonPanel({ state, npc, onClose, onCustom }: { state: GameState; npc: Npc; onClose: () => void; onCustom: (v: ActionView) => void }) {
   const params = { npcId: npc.id };
   return (
     <Sheet title={npc.firstName} onClose={onClose}>
@@ -44,7 +44,7 @@ export function PersonPanel({ state, npc, onClose }: { state: GameState; npc: Np
       {npc.alive ? (
         groupsOf(state, "people", params).map((g) => (
           <Section key={g} title={g || "Interact"}>
-            <ActionList state={state} section="people" params={params} group={g === "" ? undefined : g} />
+            <ActionList state={state} section="people" params={params} group={g === "" ? undefined : g} onCustom={onCustom} />
           </Section>
         ))
       ) : (
@@ -54,10 +54,10 @@ export function PersonPanel({ state, npc, onClose }: { state: GameState; npc: Np
   );
 }
 
-export function RelationshipsPanel({ state, onClose }: { state: GameState; onClose: () => void }) {
+export function RelationshipsPanel({ state, onClose, onCustom }: { state: GameState; onClose: () => void; onCustom: (v: ActionView) => void }) {
   const [openId, setOpenId] = useState<string | null>(null);
   const npc = openId ? state.npcs[openId] : undefined;
-  if (npc) return <PersonPanel state={state} npc={npc} onClose={() => setOpenId(null)} />;
+  if (npc) return <PersonPanel state={state} npc={npc} onClose={() => setOpenId(null)} onCustom={onCustom} />;
   const groups = peopleGroups(state);
   return (
     <Sheet title="People" onClose={onClose}>

@@ -125,6 +125,7 @@ export function newLife(content: Content, options: NewLifeOptions = {}): GameSta
     lastName: options.lastName ?? rng.pick(country.names.last),
     gender,
     pronouns: pronounsFor(gender),
+    attraction: gender === "male" ? "women" : gender === "female" ? "men" : "everyone",
     age: 0,
     birthYear: year,
     countryId,

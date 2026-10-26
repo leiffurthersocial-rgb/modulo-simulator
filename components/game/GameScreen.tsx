@@ -42,7 +42,7 @@ export function GameScreen({ state }: { state: GameState }) {
       <BottomNav onOpen={setOverlay} onAge={ageUp} canAge={canAgeUp(state)} />
 
       {overlay === "activities" && <ActivitiesPanel state={state} onClose={close} onCustom={setCustom} />}
-      {overlay === "relationships" && <RelationshipsPanel state={state} onClose={close} />}
+      {overlay === "relationships" && <RelationshipsPanel state={state} onClose={close} onCustom={setCustom} />}
       {overlay === "occupation" && <OccupationPanel state={state} onClose={close} onCustom={setCustom} />}
       {overlay === "assets" && <AssetsPanel state={state} onClose={close} onCustom={setCustom} />}
       {overlay === "settings" && <SettingsPanel onClose={close} />}

@@ -37,7 +37,7 @@ export function ActionList({
           subtitle={v.blocked ?? v.description}
           right={v.cost ? money(v.cost) : undefined}
           disabled={v.blocked !== undefined}
-          onClick={() => (v.action.ui && onCustom ? onCustom(v) : act(v.action.id, params))}
+          onClick={() => ((v.action.ui || v.action.options) && onCustom ? onCustom({ ...v, params }) : act(v.action.id, params))}
         />
       ))}
     </>
