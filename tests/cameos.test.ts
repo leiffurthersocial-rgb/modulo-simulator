@@ -59,7 +59,8 @@ describe("cameo slots", () => {
   });
 
   it("only fills roles the friend allows", () => {
-    expect(claimRepeatedly(20, "boss")).toBeUndefined();
+    expect(claimRepeatedly(20, "date")).toBeUndefined();
+    expect(claimRepeatedly(20, "boss")?.id).toBe("leo");
     expect(claimRepeatedly(20, "gymBuddy")?.id).toBe("leo");
   });
 
@@ -70,13 +71,35 @@ describe("cameo slots", () => {
     const npc = spawnFriendNpc(s, rng, content.countries.us!, leo, "gymBuddy", 50);
     expect(npc.firstName).toBe("Leo");
     expect(npc.friendId).toBe("leo");
-    expect(npc.appearance).toEqual({ ...APPEARANCE_DEFAULTS, ...leo.appearance });
+    expect(npc.appearance).toEqual({ ...APPEARANCE_DEFAULTS, presentation: "masculine", ...leo.appearance });
+    expect(npc.gender).toBe("male");
+    expect(npc.pronouns).toBe("he");
     expect(npc.appearance.hairStyle).toBe("sweptBack");
     expect(Math.abs(npc.age - 20)).toBeLessThanOrEqual(1);
     expect(s.cameos.destined).toHaveLength(0);
     expect(s.cameos.met).toEqual([{ friendId: "leo", npcId: npc.id, age: 20, role: "gymBuddy" }]);
     expect(s.achievements).toContain(CAMEO_ACHIEVEMENT);
     expect(claimCameoSlot(s, rng, content, "gymBuddy")).toBeUndefined();
+  });
+
+  it("all friends are male and keep their pinned look exactly", () => {
+    const s = lifeAtAge(20, "all", content);
+    const rng = Rng.fromSeed("all");
+    for (const f of FRIENDS) {
+      const npc = spawnFriendNpc(s, rng, content.countries.us!, f, "friend", 50);
+      expect(npc.gender).toBe("male");
+      expect(npc.appearance.presentation).toBe("masculine");
+      expect(npc.appearance).toMatchObject(f.appearance);
+    }
+  });
+
+  it("gets a plausible age in older-person roles", () => {
+    const s = lifeAtAge(12, "teacher", content);
+    const rng = Rng.fromSeed("teacher");
+    const [lo, hi] = cfg.roleAgeOffsets.teacher!;
+    const npc = spawnFriendNpc(s, rng, content.countries.us!, leo, "teacher", 50);
+    expect(npc.age).toBeGreaterThanOrEqual(12 + lo);
+    expect(npc.age).toBeLessThanOrEqual(12 + hi);
   });
 
   it("appears through a normal new-NPC event binding", () => {

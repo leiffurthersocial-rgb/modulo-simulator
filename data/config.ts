@@ -1,4 +1,4 @@
-import type { Difficulty } from "@/engine/types";
+import type { Difficulty, NpcRole } from "@/engine/types";
 
 /** Global tunables. Everything balance-related that is not per-event lives here. */
 export const GAME_CONFIG = {
@@ -33,7 +33,15 @@ export const GAME_CONFIG = {
     maxDestinyAge: 45,
     /** When a destined friend could fill a new NPC slot, chance they take it (spreads cameos out). */
     takeSlotChance: 0.5,
-    /** Default age relative to the player. */
+    /** Default age relative to the player (peer roles). */
     defaultAgeOffset: [-1, 1] as readonly [number, number],
+    /** Age relative to the player for roles where a peer would make no sense. Wins over a friend's ageOffset. */
+    roleAgeOffsets: {
+      teacher: [18, 35],
+      boss: [6, 20],
+      therapist: [8, 30],
+      lawyer: [5, 25],
+      employee: [-15, -2],
+    } as Readonly<Partial<Record<NpcRole, readonly [number, number]>>>,
   },
 } as const;

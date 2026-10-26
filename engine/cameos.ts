@@ -55,7 +55,8 @@ export function spawnFriendNpc(
   role: NpcRole,
   closeness: number,
 ): Npc {
-  const [lo, hi] = friend.ageOffset ?? GAME_CONFIG.friendCameos.defaultAgeOffset;
+  const cfg = GAME_CONFIG.friendCameos;
+  const [lo, hi] = cfg.roleAgeOffsets[role] ?? friend.ageOffset ?? cfg.defaultAgeOffset;
   const gender = genderForFriend(friend);
   const npc = createNpc(state, rng, country, {
     role,

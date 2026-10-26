@@ -6,10 +6,10 @@ import type { FriendConfig, NpcRole } from "@/engine/types";
  * - `traits`: mechanical personality traits (see PERSONALITY_TRAITS in engine/types/npc.ts).
  *   Filling these in changes how the friend behaves in events and what they say.
  * - `dialogue`: custom lines per situation; these win over generic trait-based lines.
- * - `roles`: contexts they may appear in. They are treated as peers of the player,
- *   so stick to roles where someone about the player's age makes sense.
+ * - `roles`: contexts they may appear in. Peer roles use the friend's age (about the
+ *   player's); older-person roles like boss or teacher use GAME_CONFIG.friendCameos.roleAgeOffsets.
  * - `rarity`: multiplier on GAME_CONFIG.friendCameos.baseChancePerLife.
- * - `pronouns`: omitted means "they" in event text.
+ * - `pronouns`: drives event text, gender, and the avatar's presentation.
  */
 
 const PEER_ROLES: readonly NpcRole[] = [
@@ -23,7 +23,15 @@ const PEER_ROLES: readonly NpcRole[] = [
   "bandmate",
   "teammate",
   "travelBuddy",
+  "rival",
+  "nemesis",
+  "cellmate",
 ];
+
+/** Roles where the friend is older or younger than the player (see roleAgeOffsets in config). */
+const NON_PEER_ROLES: readonly NpcRole[] = ["teacher", "boss", "employee", "therapist", "lawyer"];
+
+const ALL_ROLES: readonly NpcRole[] = [...PEER_ROLES, ...NON_PEER_ROLES];
 
 export const FRIENDS: readonly FriendConfig[] = [
   {
@@ -32,7 +40,8 @@ export const FRIENDS: readonly FriendConfig[] = [
     appearance: { hairStyle: "mod", hairColor: "brown", eyeColor: "blue" },
     traits: [],
     dialogue: {},
-    roles: PEER_ROLES,
+    pronouns: "he",
+    roles: ALL_ROLES,
     rarity: 1,
   },
   {
@@ -41,7 +50,8 @@ export const FRIENDS: readonly FriendConfig[] = [
     appearance: { hairStyle: "mod", hairColor: "brown", eyeColor: "brown" },
     traits: [],
     dialogue: {},
-    roles: PEER_ROLES,
+    pronouns: "he",
+    roles: ALL_ROLES,
     rarity: 1,
   },
   {
@@ -50,7 +60,8 @@ export const FRIENDS: readonly FriendConfig[] = [
     appearance: { hairStyle: "short", hairColor: "blonde", eyeColor: "brown" },
     traits: [],
     dialogue: {},
-    roles: PEER_ROLES,
+    pronouns: "he",
+    roles: ALL_ROLES,
     rarity: 1,
   },
   {
@@ -59,7 +70,8 @@ export const FRIENDS: readonly FriendConfig[] = [
     appearance: { hairStyle: "middlePart", hairColor: "brown", eyeColor: "green", glasses: "round" },
     traits: [],
     dialogue: {},
-    roles: PEER_ROLES,
+    pronouns: "he",
+    roles: ALL_ROLES,
     rarity: 1,
   },
   {
@@ -74,7 +86,8 @@ export const FRIENDS: readonly FriendConfig[] = [
     },
     traits: [],
     dialogue: {},
-    roles: PEER_ROLES,
+    pronouns: "he",
+    roles: ALL_ROLES,
     rarity: 1,
   },
   {
@@ -83,7 +96,8 @@ export const FRIENDS: readonly FriendConfig[] = [
     appearance: { hairStyle: "short", hairColor: "black", eyeColor: "brown", skinTone: "brown" },
     traits: [],
     dialogue: {},
-    roles: PEER_ROLES,
+    pronouns: "he",
+    roles: ALL_ROLES,
     rarity: 1,
   },
   {
@@ -92,7 +106,8 @@ export const FRIENDS: readonly FriendConfig[] = [
     appearance: { hairStyle: "mod", hairColor: "blonde", eyeColor: "blue" },
     traits: [],
     dialogue: {},
-    roles: PEER_ROLES,
+    pronouns: "he",
+    roles: ALL_ROLES,
     rarity: 1,
   },
   {
@@ -101,7 +116,8 @@ export const FRIENDS: readonly FriendConfig[] = [
     appearance: { hairStyle: "sweptBack", hairColor: "brown", eyeColor: "brown" },
     traits: [],
     dialogue: {},
-    roles: PEER_ROLES,
+    pronouns: "he",
+    roles: ALL_ROLES,
     rarity: 1,
   },
 ];
