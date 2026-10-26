@@ -19,7 +19,7 @@ export const unitedStates: Country = {
   mortalityFactor: 1,
   freeCollege: false,
   conscription: false,
-  tags: ["gunsCommon", "presidential"],
+  tags: ["gunsCommon", "presidential", "deathPenalty"],
   names: {
     male: ["James", "Michael", "Tyler", "Brandon", "Marcus", "Ethan", "Noah", "Caleb", "Andre", "Jacob", "Luis", "Dylan", "Wyatt", "Jordan", "Kevin", "Mason"],
     female: ["Emily", "Madison", "Ashley", "Jasmine", "Olivia", "Hailey", "Brianna", "Kayla", "Sophia", "Megan", "Destiny", "Abigail", "Lauren", "Maria", "Chloe", "Taylor"],

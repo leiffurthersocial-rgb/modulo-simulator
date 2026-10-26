@@ -52,6 +52,30 @@ export function ProfilePanel({ state, onClose, extra }: { state: GameState; onCl
         <Bar label="Fame" value={p.fame} />
         <Bar label="Notoriety" value={p.crime.notoriety} />
       </Section>
+      {(p.health.conditions.length > 0 || Object.values(p.health.addictions).some((v) => (v ?? 0) > 0)) && (
+        <Section title="Health">
+          {p.health.conditions.map((c) => (
+            <Bar key={c.id} label={c.name} value={c.severity} />
+          ))}
+          {Object.entries(p.health.addictions)
+            .filter(([, v]) => (v ?? 0) > 0)
+            .map(([k, v]) => (
+              <Bar key={k} label={`${k[0]!.toUpperCase()}${k.slice(1)} habit`} value={v ?? 0} />
+            ))}
+        </Section>
+      )}
+      {p.crime.record.length > 0 && (
+        <Section title="Criminal record">
+          {p.crime.record.map((r, i) => (
+            <div key={i} className="flex justify-between border-b border-line px-3 py-2 text-sm last:border-b-0">
+              <span className="font-semibold capitalize">{r.crime}</span>
+              <span className="text-muted">
+                Age {r.age} · {r.convicted ? (r.sentenceYears > 0 ? `${r.sentenceYears} yrs` : "probation") : "arrested"}
+              </span>
+            </div>
+          ))}
+        </Section>
+      )}
       {extra}
     </Sheet>
   );

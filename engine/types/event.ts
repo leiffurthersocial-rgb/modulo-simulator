@@ -149,6 +149,11 @@ export interface GameEvent {
   tone?: Tone;
   /** Effects applied when an event without choices fires. Also applied before choices on a choice event. */
   effects?: Effects;
+  /**
+   * Variables a triggered event expects from whoever fires it (with example values).
+   * Documents the contract and lets content tests render the text.
+   */
+  expects?: TemplateVars;
   /** 2-4 choices make this a popup that pauses the game. */
   choices?: readonly EventChoice[];
 }

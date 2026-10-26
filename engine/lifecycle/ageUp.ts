@@ -14,7 +14,9 @@ import { runAssetYear } from "../assets";
 import { runBusinessYear } from "../business";
 import { runCareerYear } from "../career";
 import { runFamilyYear } from "../family";
-import { runNpcYear, runPlayerDrift, runPrisonYear } from "./yearly";
+import { runHealthYear } from "../health";
+import { runCrimeYear } from "../crime";
+import { runNpcYear, runPlayerDrift } from "./yearly";
 
 export function canAgeUp(state: GameState): boolean {
   return state.status === "alive" && state.pending.length === 0;
@@ -77,9 +79,10 @@ export function ageUp(prev: GameState, content: Content): GameState {
   runBusinessYear(state, rng);
   runAssetYear(state, rng);
   runFinanceYear(state, country);
-  runPrisonYear(state);
 
-  if (!rollMortality(state, rng, country)) runEvents(state, rng, content);
+  runCrimeYear(state);
+  runHealthYear(state, rng);
+  if (state.status === "alive" && !rollMortality(state, rng, country)) runEvents(state, rng, content);
   postProcess(state, rng, content);
   state.timeline.push({ age: state.player.age, netWorth: netWorth(state), stats: { ...state.player.stats } });
 

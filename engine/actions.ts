@@ -31,6 +31,14 @@ function usesLeft(action: GameAction, state: GameState, params: ActionParams): n
   return left;
 }
 
+/** Sections still available behind bars. */
+const PRISON_SECTIONS: readonly GameAction["section"][] = ["prison", "mind", "people"];
+
+function shown(action: GameAction, ctx: EventContext): boolean {
+  if (ctx.player.crime.prison && !PRISON_SECTIONS.includes(action.section)) return false;
+  return !action.visible || action.visible(ctx);
+}
+
 function blockedReason(action: GameAction, ctx: EventContext, params: ActionParams): string | undefined {
   if (ctx.state.status !== "alive") return "You're dead.";
   if (ctx.state.pending.length > 0) return "Deal with what's in front of you first.";
@@ -48,7 +56,7 @@ export function listActions(
   const npc = typeof params.npcId === "string" ? state.npcs[params.npcId] : undefined;
   const ctx = makeContext(state, new RngClass(state.rngState), content, npc, { ...params });
   return content.actions
-    .filter((a) => a.section === section && (!a.visible || a.visible(ctx)))
+    .filter((a) => a.section === section && shown(a, ctx))
     .map((a) => {
       const cost = a.cost === undefined ? undefined : typeof a.cost === "function" ? a.cost(ctx) : a.cost;
       return {
@@ -81,7 +89,7 @@ export function performAction(prev: GameState, content: Content, actionId: strin
   const rng = new RngClass(state.rngState);
   const npc = typeof params.npcId === "string" ? state.npcs[params.npcId] : undefined;
   const ctx = makeContext(state, rng, content, npc, { ...params });
-  if ((action.visible && !action.visible(ctx)) || blockedReason(action, ctx, params)) return prev;
+  if (!shown(action, ctx) || blockedReason(action, ctx, params)) return prev;
   if (action.options && typeof params.option === "string") {
     const opt = action.options(ctx, params).find((o) => o.id === params.option);
     if (!opt || opt.blocked) return prev;

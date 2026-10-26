@@ -47,7 +47,7 @@ export const china: Country = {
   currency: { code: "CNY", symbol: "¥", perUsd: 7.2 },
   salaryIndex: 0.3, costIndex: 0.45,
   taxBrackets: [{ from: 0, rate: 0 }, { from: 8_300, rate: 0.03 }, { from: 13_300, rate: 0.1 }, { from: 28_000, rate: 0.2 }, { from: 42_000, rate: 0.25 }, { from: 63_000, rate: 0.3 }, { from: 93_000, rate: 0.35 }, { from: 132_000, rate: 0.45 }],
-  mortalityFactor: 0.98, freeCollege: false, conscription: false, tags: [],
+  mortalityFactor: 0.98, freeCollege: false, conscription: false, tags: ["deathPenalty"],
   names: {
     male: ["Wei", "Jun", "Hao", "Yi", "Lei", "Jie", "Tao", "Ming", "Zhi", "Yang", "Bo", "Chen"],
     female: ["Li", "Xin", "Mei", "Ying", "Jing", "Fang", "Yan", "Hui", "Lan", "Xiu", "Na", "Ting"],

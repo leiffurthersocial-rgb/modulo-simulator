@@ -108,6 +108,7 @@ describe("templates", () => {
       const ctx = ctxFor(s);
       ctx.npc = createNpc(s, ctx.rng, ctx.country, { role: "friend", age: 30 });
       ctx.vars.amount = 100;
+      Object.assign(ctx.vars, e.expects);
       applyEffects(e.effects, ctx);
       const check = (t: TextTemplate | undefined) => {
         if (t === undefined) return;

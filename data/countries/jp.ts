@@ -19,7 +19,7 @@ export const japan: Country = {
   mortalityFactor: 0.75,
   freeCollege: false,
   conscription: false,
-  tags: ["monarchy", "island", "parliamentary"],
+  tags: ["monarchy", "island", "parliamentary", "deathPenalty"],
   names: {
     male: ["Haruto", "Sota", "Yuto", "Riku", "Takumi", "Kenji", "Daiki", "Hiroshi", "Ren", "Kaito", "Shota", "Yusuke", "Kazuki", "Takeshi", "Ryo", "Sho"],
     female: ["Yui", "Sakura", "Hina", "Aoi", "Mei", "Yuna", "Rin", "Haruka", "Misaki", "Nanami", "Ayaka", "Emi", "Kaori", "Mio", "Akari", "Saki"],

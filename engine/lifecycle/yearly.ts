@@ -1,3 +1,4 @@
+import { CONDITION_BY_ID } from "@/data/conditions";
 import { addLog } from "../log";
 import type { Rng } from "../rng";
 import { adjustSkill, adjustStat } from "../stats";
@@ -105,10 +106,10 @@ export function runPlayerDrift(state: GameState, rng: Rng): void {
   // Happiness drifts back toward a personal baseline.
   adjustStat(p, "happiness", (62 - p.stats.happiness) * 0.15 + rng.normal(0, 3));
 
-  // Health: resilient youth, slow decline from middle age, faster in old age.
-  const healthDelta =
-    age < 30 ? rng.int(-1, 2) : age < 50 ? rng.int(-2, 1) : age < 65 ? rng.int(-2, 0) : age < 80 ? rng.int(-3, 0) : rng.int(-4, 0);
-  adjustStat(p, "health", healthDelta);
+  // Health recovers toward an age-appropriate baseline (injuries heal, colds pass) and the
+  // baseline itself slides with age. Conditions and vices below pull it under the baseline.
+  const baseline = 86 - Math.max(0, age - 35) * 0.8;
+  adjustStat(p, "health", (baseline - p.stats.health) * 0.12 + rng.int(-2, 1));
 
   // Smarts grow through childhood and school, plateau, and fade late in life.
   const smartsDelta =
@@ -136,17 +137,9 @@ export function runPlayerDrift(state: GameState, rng: Rng): void {
       adjustStat(p, "happiness", -level / 30);
     }
   }
-  // Chronic conditions too.
-  for (const c of p.health.conditions) adjustStat(p, "health", -c.severity / 20);
-}
-
-/** Count down a prison sentence and release on completion. */
-export function runPrisonYear(state: GameState): void {
-  const prison = state.player.crime.prison;
-  if (!prison) return;
-  prison.yearsLeft--;
-  if (prison.yearsLeft <= 0) {
-    state.player.crime.prison = undefined;
-    addLog(state, `You were released from ${prison.facility} after ${prison.totalYears} years.`, "major");
+  // Serious conditions wear you down; mental-health ones weigh on happiness instead.
+  for (const c of p.health.conditions) {
+    if (c.severity < 35) continue;
+    adjustStat(p, CONDITION_BY_ID[c.id]?.affects ?? "health", -(c.severity - 30) / 40);
   }
 }

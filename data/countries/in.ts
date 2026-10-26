@@ -18,7 +18,7 @@ export const india: Country = {
   mortalityFactor: 1.45,
   freeCollege: false,
   conscription: false,
-  tags: ["parliamentary", "cricket"],
+  tags: ["parliamentary", "cricket", "deathPenalty"],
   names: {
     male: ["Aarav", "Vihaan", "Arjun", "Rohan", "Aditya", "Karan", "Rahul", "Vikram", "Siddharth", "Ishaan", "Nikhil", "Rajesh", "Amit", "Pranav", "Kabir", "Dev"],
     female: ["Aanya", "Diya", "Priya", "Ananya", "Isha", "Kavya", "Neha", "Pooja", "Riya", "Sneha", "Meera", "Tanvi", "Shreya", "Lakshmi", "Nisha", "Aditi"],

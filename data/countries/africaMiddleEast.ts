@@ -5,7 +5,7 @@ export const nigeria: Country = {
   currency: { code: "NGN", symbol: "₦", perUsd: 1500 },
   salaryIndex: 0.08, costIndex: 0.18,
   taxBrackets: [{ from: 0, rate: 0.07 }, { from: 200, rate: 0.11 }, { from: 400, rate: 0.15 }, { from: 700, rate: 0.19 }, { from: 1_100, rate: 0.21 }, { from: 2_100, rate: 0.24 }],
-  mortalityFactor: 2.1, freeCollege: false, conscription: false, tags: ["presidential", "football"],
+  mortalityFactor: 2.1, freeCollege: false, conscription: false, tags: ["presidential", "football", "deathPenalty"],
   names: {
     male: ["Chinedu", "Emeka", "Oluwaseun", "Tunde", "Ibrahim", "Musa", "Chukwuemeka", "Ayodele", "Femi", "Uche", "Babajide", "Obinna"],
     female: ["Chiamaka", "Ngozi", "Adaeze", "Funmilayo", "Aisha", "Zainab", "Yetunde", "Amaka", "Folake", "Nneka", "Ifeoma", "Bisi"],
@@ -33,7 +33,7 @@ export const egypt: Country = {
   currency: { code: "EGP", symbol: "E£", perUsd: 48 },
   salaryIndex: 0.1, costIndex: 0.2,
   taxBrackets: [{ from: 0, rate: 0 }, { from: 850, rate: 0.1 }, { from: 1_150, rate: 0.15 }, { from: 1_500, rate: 0.2 }, { from: 4_200, rate: 0.225 }, { from: 8_300, rate: 0.25 }, { from: 25_000, rate: 0.275 }],
-  mortalityFactor: 1.4, freeCollege: true, conscription: true, tags: ["presidential", "football"],
+  mortalityFactor: 1.4, freeCollege: true, conscription: true, tags: ["presidential", "football", "deathPenalty"],
   names: {
     male: ["Mohamed", "Ahmed", "Mahmoud", "Omar", "Youssef", "Mostafa", "Ali", "Karim", "Hassan", "Tarek", "Amr", "Khaled"],
     female: ["Fatma", "Mariam", "Nour", "Salma", "Habiba", "Yasmin", "Aya", "Hana", "Menna", "Rana", "Dina", "Laila"],
