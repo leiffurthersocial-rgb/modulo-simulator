@@ -5,6 +5,8 @@ import { Trash2 } from "lucide-react";
 import { Logo } from "@/components/Logo";
 import { PrimaryButton, SecondaryButton } from "@/components/ui/Modal";
 import { SettingsPanel } from "@/components/panels/SettingsPanel";
+import { AchievementsScreen } from "./AchievementsScreen";
+import { Graveyard } from "./Graveyard";
 import { DEFAULT_CONTENT } from "@/data";
 import { useGame } from "@/store/gameStore";
 import { slotSummaries, type SlotSummary } from "@/store/persistence";
@@ -13,6 +15,7 @@ export function TitleScreen({ extra }: { extra?: React.ReactNode }) {
   const { game, slot, goTo, openSlot, deleteSlot, profile } = useGame();
   const [slots, setSlots] = useState<(SlotSummary | undefined)[]>([]);
   const [settings, setSettings] = useState(false);
+  const [sheet, setSheet] = useState<"achievements" | "graveyard" | null>(null);
   const [confirm, setConfirm] = useState<number | null>(null);
   useEffect(() => setSlots(slotSummaries()), [game]);
 
@@ -56,6 +59,10 @@ export function TitleScreen({ extra }: { extra?: React.ReactNode }) {
           </div>
         ))}
       </div>
+      <div className="mt-4 grid grid-cols-2 gap-2">
+        <SecondaryButton onClick={() => setSheet("achievements")}>Achievements</SecondaryButton>
+        <SecondaryButton onClick={() => setSheet("graveyard")}>Graveyard</SecondaryButton>
+      </div>
       {extra}
       <div className="mt-6 flex items-center justify-between text-xs text-muted">
         <span>{profile.lives} {profile.lives === 1 ? "life" : "lives"} lived</span>
@@ -64,6 +71,8 @@ export function TitleScreen({ extra }: { extra?: React.ReactNode }) {
         </button>
       </div>
       {settings && <SettingsPanel onClose={() => setSettings(false)} />}
+      {sheet === "achievements" && <AchievementsScreen onClose={() => setSheet(null)} />}
+      {sheet === "graveyard" && <Graveyard onClose={() => setSheet(null)} />}
     </main>
   );
 }

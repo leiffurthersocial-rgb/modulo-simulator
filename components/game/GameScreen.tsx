@@ -11,14 +11,17 @@ import { RelationshipsPanel } from "@/components/panels/RelationshipsPanel";
 import { SettingsPanel } from "@/components/panels/SettingsPanel";
 import { canAgeUp, type ActionView, type GameState } from "@/engine";
 import { useGame } from "@/store/gameStore";
+import { SecondaryButton } from "@/components/ui/Modal";
+import { AchievementsScreen } from "@/components/screens/AchievementsScreen";
 import { BottomNav, type Panel } from "./BottomNav";
+import { LifeSummary } from "./LifeSummary";
 import { DeathScreen } from "./DeathScreen";
 import { EventModal, NoticeModal } from "./EventModal";
 import { LifeLog } from "./LifeLog";
 import { StatBars } from "./StatBars";
 import { TopBar } from "./TopBar";
 
-type Overlay = Panel | "settings" | "profile" | null;
+type Overlay = Panel | "settings" | "profile" | "summary" | "achievements" | null;
 
 export function GameScreen({ state }: { state: GameState }) {
   const { ageUp, choose, dismissNotice, rewind, undo } = useGame();
@@ -46,7 +49,20 @@ export function GameScreen({ state }: { state: GameState }) {
       {overlay === "occupation" && <OccupationPanel state={state} onClose={close} onCustom={setCustom} />}
       {overlay === "assets" && <AssetsPanel state={state} onClose={close} onCustom={setCustom} />}
       {overlay === "settings" && <SettingsPanel onClose={close} />}
-      {overlay === "profile" && <ProfilePanel state={state} onClose={close} />}
+      {overlay === "profile" && (
+        <ProfilePanel
+          state={state}
+          onClose={close}
+          extra={
+            <div className="grid grid-cols-2 gap-2">
+              <SecondaryButton onClick={() => setOverlay("summary")}>Life so far</SecondaryButton>
+              <SecondaryButton onClick={() => setOverlay("achievements")}>Achievements</SecondaryButton>
+            </div>
+          }
+        />
+      )}
+      {overlay === "summary" && <LifeSummary state={state} onClose={close} />}
+      {overlay === "achievements" && <AchievementsScreen onClose={close} />}
       {custom && <CustomUiHost state={state} view={custom} onClose={() => setCustom(null)} />}
 
       {pending ? (
@@ -54,7 +70,7 @@ export function GameScreen({ state }: { state: GameState }) {
       ) : notice ? (
         <NoticeModal state={state} notice={notice} onClose={() => dismissNotice(notice.id)} />
       ) : null}
-      {state.status === "dead" && !notice && <DeathScreen state={state} />}
+      {state.status === "dead" && !notice && overlay !== "summary" && <DeathScreen state={state} onSummary={() => setOverlay("summary")} />}
     </div>
   );
 }

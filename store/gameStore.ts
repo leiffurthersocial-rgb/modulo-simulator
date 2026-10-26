@@ -5,6 +5,7 @@ import { DEFAULT_CONTENT } from "@/data";
 import {
   ageUp as engineAgeUp,
   choose as engineChoose,
+  continueAsChild as engineContinueAsChild,
   debugForceCameo,
   deserializeState,
   dismissNotice as engineDismiss,
@@ -41,6 +42,8 @@ interface GameStore {
   choose(uid: string, choiceId: string): void;
   act(actionId: string, params?: ActionParams): void;
   dismissNotice(id: string): void;
+  /** Legacy mode: carry on as one of your children. */
+  continueAsChild(childId: string): void;
   /** Debug only: spawn a friend cameo into the current life. */
   forceCameo(friendId: string): void;
   rewind(): void;
@@ -124,6 +127,12 @@ export const useGame = create<GameStore>((set, get) => {
     act(actionId, params) {
       const { game } = get();
       if (game) commit(performAction(game, DEFAULT_CONTENT, actionId, params));
+    },
+
+    continueAsChild(childId) {
+      const { game } = get();
+      if (!game) return;
+      get().replaceGame(engineContinueAsChild(game, DEFAULT_CONTENT, childId));
     },
 
     forceCameo(friendId) {

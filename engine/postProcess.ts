@@ -1,4 +1,5 @@
 import type { Content } from "./content";
+import { evaluateAchievements } from "./achievementCheck";
 import { evaluateGoals } from "./goals";
 import type { Rng } from "./rng";
 import type { GameState } from "./types";
@@ -14,4 +15,5 @@ export function postProcess(state: GameState, _rng: Rng, content: Content): void
     const def = content.careers.find((c) => c.id === job.careerId);
     if (def && job.rank === def.ranks.length - 1 && def.ranks.length > 1) state.flags.topOfCareer = true;
   }
+  evaluateAchievements(state, content);
 }

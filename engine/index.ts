@@ -14,3 +14,5 @@ export { formatMoney } from "./util";
 export { serializeState, deserializeState, SaveError } from "./save";
 export { simulateLife } from "./sim";
 export { statusLabel, roleLabel, peopleGroups, ROLE_LABELS, type PeopleGroup } from "./selectors";
+export { lifeRibbons, type Ribbon } from "./ribbons";
+export { continueAsChild, heirs } from "./lifecycle/legacy";

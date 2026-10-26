@@ -1,0 +1,171 @@
+import { netWorth } from "@/engine/finance";
+import type { GameState } from "@/engine/types";
+
+export interface AchievementDef {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  /** Hidden until earned (shown as "???"). */
+  secret?: boolean;
+  /** Checked after every change. Omit for achievements unlocked directly by events (fx.achieve). */
+  check?: (s: GameState, costIndex: number) => boolean;
+}
+
+const n = (s: GameState, k: string) => Number(s.flags[k] ?? 0);
+const people = (s: GameState, role: string) => Object.values(s.npcs).filter((x) => x.role === role);
+const degree = (s: GameState, level: string) => s.player.education.degrees.some((d) => d.level === level);
+const a = (id: string, name: string, description: string, icon: string, check?: AchievementDef["check"], secret = false): AchievementDef => ({ id, name, description, icon, check, secret });
+
+export const ACHIEVEMENTS: readonly AchievementDef[] = [
+  // ------------------------------------------------------------ life & age
+  a("first-birthday", "Happy Birthday", "Turn 1.", "Sparkles", (s) => s.player.age >= 1),
+  a("teenager", "Teenage Dirtbag", "Turn 13.", "Smile", (s) => s.player.age >= 13),
+  a("adult", "Legally an Adult", "Turn 18.", "User", (s) => s.player.age >= 18),
+  a("over-the-hill", "Over the Hill", "Turn 50.", "Clock", (s) => s.player.age >= 50),
+  a("septuagenarian", "Seventy and Counting", "Turn 70.", "Clock", (s) => s.player.age >= 70),
+  a("nonagenarian", "Ninety Not Out", "Turn 90.", "Clock", (s) => s.player.age >= 90),
+  a("centenarian", "Centenarian", "Turn 100.", "Crown"),
+  a("die-young", "Gone Too Soon", "Die before 30.", "Skull", (s) => s.status === "dead" && s.player.age < 30, true),
+  a("peaceful", "Peaceful Exit", "Die of old age.", "Flower2", (s) => s.death?.cause === "oldAge"),
+  a("met-a-legend", "You Met a Legend", "Meet someone… familiar.", "Star", undefined, true),
+  // ------------------------------------------------------------ stats
+  a("genius", "Big Brain", "Reach 100% smarts.", "Brain", (s) => s.player.stats.smarts >= 100),
+  a("gorgeous", "Heartbreaker", "Reach 100% looks.", "Star", (s) => s.player.stats.looks >= 100),
+  a("bliss", "Pure Bliss", "Reach 100% happiness.", "Smile", (s) => s.player.stats.happiness >= 100),
+  a("iron-health", "Fit as a Fiddle", "Reach 100% health as an adult.", "HeartPulse", (s) => s.player.age >= 18 && s.player.stats.health >= 100),
+  a("rock-bottom", "Rock Bottom", "Hit 0% happiness.", "Ghost", (s) => s.player.stats.happiness <= 0, true),
+  a("charmer", "Silver Tongue", "Reach 90% charisma.", "MessageCircle", (s) => s.player.skills.charisma >= 90),
+  a("artist", "Renaissance Soul", "Reach 90% creativity.", "Palette", (s) => s.player.skills.creativity >= 90),
+  a("athlete", "Peak Performance", "Reach 90% athleticism.", "Dumbbell", (s) => s.player.skills.athleticism >= 90),
+  a("streetwise", "Street Smart", "Reach 90% street smarts.", "Eye", (s) => s.player.skills.streetSmarts >= 90),
+  a("saint", "Saint", "Reach 90 karma.", "HandHeart", (s) => s.player.karma >= 90),
+  a("villain", "Villain", "Sink to -90 karma.", "Flame", (s) => s.player.karma <= -90, true),
+  // ------------------------------------------------------------ school
+  a("spelling-bee-champ", "Spelling Bee Champion", "Win the school spelling bee.", "BookOpen"),
+  a("science-fair-winner", "Mad Scientist", "Win the science fair.", "Zap"),
+  a("debate-champ", "Debate Champion", "Win a debate tournament.", "MessageCircle"),
+  a("chess-champ", "Grandmaster in Training", "Win a chess tournament.", "Brain"),
+  a("student-president", "Student President", "Win a student council election.", "Landmark"),
+  a("game-winner", "Buzzer Beater", "Score the winning point in a championship game.", "Trophy"),
+  a("valedictorian", "Valedictorian", "Top your graduating class.", "GraduationCap"),
+  a("diploma", "Diploma", "Graduate high school.", "GraduationCap", (s) => degree(s, "high")),
+  a("college-grad", "Bachelor", "Earn a college degree.", "GraduationCap", (s) => degree(s, "college")),
+  a("tradesperson", "Skilled Trade", "Graduate from trade school.", "Hammer", (s) => degree(s, "trade")),
+  a("masters", "Master of Something", "Earn a graduate degree.", "GraduationCap", (s) => degree(s, "grad")),
+  a("doctor-degree", "Doctor in the House", "Graduate from medical school.", "Stethoscope", (s) => degree(s, "medical")),
+  a("law-degree", "Juris Doctor", "Graduate from law school.", "Scale", (s) => degree(s, "law")),
+  a("phd", "Dr. Philosophy", "Earn a PhD.", "BookOpen", (s) => degree(s, "phd")),
+  a("published", "Peer Reviewed", "Publish groundbreaking research.", "PenTool"),
+  a("dropout", "Dropout", "Drop out of school.", "X", (s) => s.player.education.droppedOut.length > 0),
+  a("scholar", "Overachiever", "Hold three or more degrees after high school.", "Trophy", (s) => s.player.education.degrees.filter((d) => !["elementary", "middle", "high"].includes(d.level)).length >= 3),
+  // ------------------------------------------------------------ career & money
+  a("first-job", "Gainfully Employed", "Get your first job.", "Briefcase", (s) => s.player.career.job !== undefined || s.player.career.history.length > 0),
+  a("promoted", "Moving On Up", "Get promoted.", "TrendingUp", (s) => (s.player.career.job?.rank ?? 0) >= 1),
+  a("top-of-ladder", "Top of the Ladder", "Reach the highest rank in a career.", "Crown", (s) => s.flags.topOfCareer === true),
+  a("fired", "You're Fired", "Get fired.", "AlertTriangle", (s) => n(s, "firedCount") >= 1),
+  a("job-hopper", "Job Hopper", "Hold five different jobs.", "Shuffle", (s) => s.player.career.history.length + (s.player.career.job ? 1 : 0) >= 5),
+  a("lifer", "Lifer", "Stay at one company for 25 years.", "Clock", (s) => (s.player.career.job?.yearsAtCompany ?? 0) >= 25 || s.player.career.history.some((h) => h.endAge - h.startAge >= 25)),
+  a("retired", "Gone Fishing", "Retire.", "Sun", (s) => s.player.career.retired),
+  a("ceo", "Corner Office", "Become a CEO.", "Crown", (s) => s.player.career.job?.title === "Chief Executive Officer"),
+  a("surgeon", "Steady Hands", "Become a surgeon.", "Syringe", (s) => s.player.career.job?.careerId === "surgeon" && s.player.career.job.rank >= 1),
+  a("judge", "Order in the Court", "Become a judge.", "Gavel", (s) => s.player.career.job?.careerId === "judge"),
+  a("general", "Five Stars", "Become a general.", "Shield", (s) => s.player.career.job?.title === "General"),
+  a("chief", "The Chief", "Become chief of police.", "Siren", (s) => s.player.career.job?.title === "Chief of Police"),
+  a("decorated-veteran", "Decorated Veteran", "Earn a medal in the military.", "Shield"),
+  a("whistleblower", "Whistleblower", "Expose corporate wrongdoing.", "Megaphone"),
+  a("founder", "Founder", "Start a business.", "Rocket", (s) => s.flags.founder === true),
+  a("exit", "The Exit", "Sell a business for over a million.", "HandCoins", (s) => s.flags.soldForMillions === true),
+  a("startup-jackpot", "Startup Jackpot", "Strike it rich on startup equity.", "Rocket"),
+  a("side-hustler", "Side Hustler", "Run two side hustles at once.", "Laptop", (s) => s.player.sideHustles.length >= 2),
+  a("hundred-k", "Six Figures", "Have 100k in the bank.", "Coins", (s, ci) => s.player.finance.cash >= 100_000 * ci),
+  a("millionaire", "Millionaire", "Reach a net worth of 1 million.", "Gem", (s, ci) => netWorth(s) >= 1_000_000 * ci),
+  a("multi-millionaire", "Multi-Millionaire", "Reach a net worth of 10 million.", "Gem", (s, ci) => netWorth(s) >= 10_000_000 * ci),
+  a("billionaire", "Billionaire", "Reach a net worth of 1 billion.", "Crown", (s, ci) => netWorth(s) >= 1_000_000_000 * ci, true),
+  a("broke", "Flat Broke", "Owe more than 50k.", "AlertTriangle", (s, ci) => netWorth(s) <= -50_000 * ci, true),
+  a("bankrupt", "Fresh Start", "Declare bankruptcy.", "Gavel", (s) => s.player.finance.bankruptcies > 0),
+  a("debt-free", "Debt Free", "Pay off a loan completely.", "Check", (s) => s.flags.debtFree === true),
+  a("heir", "Silver Spoon", "Inherit money.", "HandCoins", (s) => n(s, "inherited") > 0),
+  a("investor", "Investor", "Buy your first stock or crypto.", "TrendingUp", (s) => s.flags.investor === true),
+  a("whale", "Whale", "Hold a portfolio worth a million.", "TrendingUp", (s, ci) => s.player.finance.holdings.reduce((t, h) => t + h.units * (s.market.prices[h.symbol] ?? 0), 0) >= 1_000_000 * ci),
+  // ------------------------------------------------------------ assets
+  a("homeowner", "Homeowner", "Buy a home.", "Home", (s) => s.player.assets.some((x) => x.kind === "house")),
+  a("landlord", "Landlord", "Rent out a property.", "Building2", (s) => s.player.assets.some((x) => x.kind === "house" && x.rentedOut)),
+  a("mansion", "Mansion Dweller", "Own a mansion or penthouse.", "Crown", (s) => s.player.assets.some((x) => x.catalogId === "mansion" || x.catalogId === "penthouse")),
+  a("car-owner", "Wheels", "Own a car.", "Car", (s) => s.player.assets.some((x) => x.kind === "car")),
+  a("supercar", "Need for Speed", "Own a supercar.", "Rocket", (s) => s.player.assets.some((x) => x.catalogId === "supercar")),
+  a("yacht", "On Deck", "Own a yacht.", "Ship", (s) => s.player.assets.some((x) => x.catalogId === "yacht")),
+  a("jet", "Jet Set", "Own a private jet.", "Plane", (s) => s.player.assets.some((x) => x.catalogId === "jet")),
+  a("pet-owner", "Best Friend", "Adopt a pet.", "PawPrint", (s) => s.player.assets.some((x) => x.kind === "pet")),
+  a("zoo", "Zookeeper", "Own four pets at once.", "PawPrint", (s) => s.player.assets.filter((x) => x.kind === "pet").length >= 4),
+  // ------------------------------------------------------------ love & family
+  a("first-love", "First Love", "Start your first relationship.", "Heart", (s) => s.flags.firstRelationship === true || people(s, "partner").length > 0 || n(s, "marriages") > 0),
+  a("engaged", "Put a Ring on It", "Get engaged.", "Gem", (s) => people(s, "fiance").length > 0 || n(s, "marriages") > 0),
+  a("married", "Just Married", "Get married.", "Church", (s) => n(s, "marriages") >= 1),
+  a("serial-spouse", "Serial Spouse", "Get married three times.", "Church", (s) => n(s, "marriages") >= 3),
+  a("divorced", "Conscious Uncoupling", "Get divorced.", "Gavel", (s) => n(s, "divorces") >= 1),
+  a("cheater", "Unfaithful", "Cheat on a partner.", "Flame", (s) => n(s, "cheated") >= 1, true),
+  a("parent", "Parenthood", "Have or adopt a child.", "Baby", (s) => people(s, "child").length > 0),
+  a("big-family", "Big Family", "Have five children.", "Users", (s) => people(s, "child").length >= 5),
+  a("twins", "Double Trouble", "Have twins.", "Baby", (s) => s.flags.twins === true),
+  a("adoptive", "Chosen Family", "Adopt a child.", "HandHeart", (s) => s.flags.adopted === true),
+  a("grandparent", "Grand", "Become a grandparent.", "Users", (s) => people(s, "grandchild").length > 0),
+  a("best-friends", "Ride or Die", "Have a best friend.", "Users", (s) => people(s, "bestFriend").some((x) => x.alive)),
+  a("popular", "Popular", "Have ten friends at once.", "Users", (s) => Object.values(s.npcs).filter((x) => x.alive && x.inContact && (x.role === "friend" || x.role === "bestFriend")).length >= 10),
+  a("rivals-to-the-end", "Rivals to the End", "Say goodbye to your lifelong rival.", "Swords"),
+  a("peacemaker", "Peacemaker", "Make peace with a rival.", "HandHeart", (s) => s.flags.madePeace === true),
+  // ------------------------------------------------------------ health & activities
+  a("marathoner", "Marathoner", "Finish a marathon.", "Trophy"),
+  a("black-belt", "Black Belt", "Earn a black belt.", "Swords", (s) => n(s, "beltRank") >= 7),
+  a("globetrotter", "Globetrotter", "Visit ten places.", "Plane", (s) => n(s, "countriesVisited") >= 10),
+  a("expat", "Expat", "Emigrate to another country.", "Plane", (s) => n(s, "emigrated") >= 1),
+  a("polyglot", "Polyglot", "Learn three languages.", "MessageCircle", (s) => n(s, "languages") >= 3),
+  a("bookworm", "Bookworm", "Read 100 books.", "BookOpen", (s) => n(s, "booksRead") >= 100),
+  a("inked", "Inked", "Get five tattoos.", "PenTool", (s) => n(s, "tattoos") >= 5),
+  a("cosmetic", "Under the Knife", "Get plastic surgery three times.", "Scissors", (s) => n(s, "surgeries") >= 3),
+  a("sober", "One Day at a Time", "Complete rehab.", "Check", (s) => s.flags.rehabSuccess === true),
+  a("survivor", "Survivor", "Survive an overdose.", "HeartPulse", (s) => s.flags.overdoseSurvivor === true, true),
+  a("lightning-rod", "Lightning Rod", "Get struck by lightning and live.", "Zap", undefined, true),
+  a("do-gooder", "Do-Gooder", "Volunteer for ten years.", "HandHeart", (s) => n(s, "volunteerYears") >= 10),
+  a("philanthropist", "Philanthropist", "Make a big charitable donation.", "HandHeart", (s) => s.flags.philanthropist === true),
+  // ------------------------------------------------------------ crime
+  a("criminal", "Life of Crime", "Commit your first crime.", "Siren", (s) => n(s, "crimesCommitted") >= 1),
+  a("career-criminal", "Career Criminal", "Commit 25 crimes.", "Siren", (s) => n(s, "crimesCommitted") >= 25),
+  a("jailbird", "Jailbird", "Go to prison.", "Lock", (s) => s.flags.everJailed === true),
+  a("escapee", "The Great Escape", "Escape from prison.", "Rocket", (s) => s.flags.fugitive !== undefined),
+  a("own-lawyer", "Represented Myself", "Win your own trial without a lawyer.", "Scale"),
+  a("heist", "Ocean's One", "Pull off a perfect heist.", "Bomb", (s) => s.flags.heistPulled === true),
+  a("bank-robber", "Bank Job", "Rob a bank successfully.", "Landmark", (s) => s.flags.bankRobber === true),
+  a("murderer", "Cold Blooded", "Commit murder.", "Skull", (s) => n(s, "murders") >= 1, true),
+  a("vigilante", "Vigilante", "Fight off a mugger.", "Shield"),
+  a("made", "Made Man", "Join the mob.", "Briefcase", (s) => n(s, "mafiaRank") >= 1, true),
+  a("don", "The Don", "Rise to the head of a crime family.", "Crown", (s) => n(s, "mafiaRank") >= 5, true),
+  a("secret-agent", "Licensed", "Complete a secret mission.", "Eye", undefined, true),
+  a("cult-escape", "Deprogrammed", "Escape a cult.", "Ghost", (s) => s.flags.cultSurvivor === true, true),
+  a("cult-leader", "Messiah Complex", "Take over a cult.", "Crown", (s) => s.flags.cultLeader === true, true),
+  // ------------------------------------------------------------ fame & politics
+  a("viral", "Gone Viral", "Have a post go viral.", "Camera", (s) => s.flags.wentViral === true),
+  a("influencer", "Influencer", "Reach 1 million followers.", "Camera", (s) => s.player.followers >= 1_000_000),
+  a("famous", "A-Lister", "Reach 80% fame.", "Star", (s) => s.player.fame >= 80),
+  a("author", "Author", "Publish a book.", "PenTool", (s) => s.flags.publishedBook === true),
+  a("bestseller", "Bestseller", "Write a bestselling book.", "BookOpen", (s) => s.flags.bestseller === true),
+  a("hit-song", "Chart Topper", "Release a hit song.", "Music", (s) => s.flags.hitSong === true),
+  a("golden-statue", "Golden Statue", "Win the top acting award.", "Trophy"),
+  a("golden-record", "Golden Record", "Win the top music award.", "Music"),
+  a("mvp", "Most Valuable Player", "Be named league MVP.", "Trophy"),
+  a("champion", "Champion", "Win a championship.", "Trophy"),
+  a("elected", "Public Servant", "Win an election.", "Landmark", (s) => s.player.highestOfficeLevel >= 1),
+  a("governor", "The Governor", "Reach the fourth level of office.", "Landmark", (s) => s.player.highestOfficeLevel >= 4),
+  a("head-of-state", "Leader of the Nation", "Become president or prime minister.", "Crown", (s) => s.player.highestOfficeLevel >= 6),
+  // ------------------------------------------------------------ luck & oddities
+  a("lottery", "Jackpot!", "Win the lottery.", "Sparkles", (s) => s.flags.lotteryWinner === true),
+  a("high-roller", "High Roller", "Win big at the casino.", "Dice5", (s) => s.flags.casinoJackpot === true),
+  a("game-show", "Quiz Champion", "Answer every question on a game show.", "Tv", (s) => s.flags.gameShowChampion === true),
+  a("curious-enough", "Curious Enough", "Solve the locker 117 mystery.", "Eye", undefined, true),
+  a("goal-getter", "Goal Getter", "Complete five life goals.", "Target", (s) => n(s, "goalsCompleted") >= 5),
+  a("bucket-list", "Bucket List", "Complete every life goal you were given.", "Check", (s) => s.player.goals.length >= 3 && s.player.goals.every((g) => g.completedAtAge !== undefined)),
+  a("legacy", "Family Legacy", "Continue a life as your child.", "Users", (s) => s.generation >= 2),
+  a("dynasty", "Dynasty", "Reach the fifth generation.", "Crown", (s) => s.generation >= 5, true),
+];
+
+export const ACHIEVEMENT_BY_ID: Readonly<Record<string, AchievementDef>> = Object.fromEntries(ACHIEVEMENTS.map((x) => [x.id, x]));
