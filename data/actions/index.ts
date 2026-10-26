@@ -1,8 +1,17 @@
 import type { GameAction } from "@/engine/types";
 import { ASSET_ACTIONS } from "./assets";
 import { CAREER_ACTIONS } from "./career";
+import { LOVE_ACTIONS } from "./love";
 import { MONEY_ACTIONS } from "./money";
+import { PEOPLE_ACTIONS } from "./people";
 import { SCHOOL_ACTIONS } from "./school";
 
 /** Every player action in the game. Add new action files here. */
-export const ALL_ACTIONS: readonly GameAction[] = [...SCHOOL_ACTIONS, ...CAREER_ACTIONS, ...ASSET_ACTIONS, ...MONEY_ACTIONS];
+export const ALL_ACTIONS: readonly GameAction[] = [
+  ...SCHOOL_ACTIONS,
+  ...CAREER_ACTIONS,
+  ...ASSET_ACTIONS,
+  ...MONEY_ACTIONS,
+  ...PEOPLE_ACTIONS,
+  ...LOVE_ACTIONS,
+];

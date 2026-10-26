@@ -13,6 +13,7 @@ import { rollMortality } from "./death";
 import { runAssetYear } from "../assets";
 import { runBusinessYear } from "../business";
 import { runCareerYear } from "../career";
+import { runFamilyYear } from "../family";
 import { runNpcYear, runPlayerDrift, runPrisonYear } from "./yearly";
 
 export function canAgeUp(state: GameState): boolean {
@@ -65,6 +66,7 @@ export function ageUp(prev: GameState, content: Content): GameState {
   startLogYear(state);
 
   runNpcYear(state, rng, country);
+  runFamilyYear(state, rng, country);
   runPlayerDrift(state, rng);
   runEducationYear(state, rng);
   runCareerYear(state, rng, content, country);

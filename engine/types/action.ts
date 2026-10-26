@@ -62,6 +62,8 @@ export interface GameAction {
   blocked?: (ctx: EventContext, params: ActionParams) => string | undefined;
   /** Max uses per year. */
   perYear?: number;
+  /** Max uses per year per person (people actions, keyed by params.npcId). */
+  perYearPerPerson?: number;
   /**
    * If present, the UI shows these as a picker first and runs the action with
    * params.option set to the chosen id.

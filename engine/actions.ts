@@ -22,15 +22,19 @@ export interface ActionView {
   params?: ActionParams;
 }
 
-function usesLeft(action: GameAction, state: GameState): number {
-  if (action.perYear === undefined) return Infinity;
-  return action.perYear - (state.actionsThisYear[action.id] ?? 0);
+function usesLeft(action: GameAction, state: GameState, params: ActionParams): number {
+  let left = Infinity;
+  if (action.perYear !== undefined) left = action.perYear - (state.actionsThisYear[action.id] ?? 0);
+  if (action.perYearPerPerson !== undefined && typeof params.npcId === "string") {
+    left = Math.min(left, action.perYearPerPerson - (state.actionsThisYear[`${action.id}:${params.npcId}`] ?? 0));
+  }
+  return left;
 }
 
 function blockedReason(action: GameAction, ctx: EventContext, params: ActionParams): string | undefined {
   if (ctx.state.status !== "alive") return "You're dead.";
   if (ctx.state.pending.length > 0) return "Deal with what's in front of you first.";
-  if (usesLeft(action, ctx.state) <= 0) return action.perYear === 1 ? "Already done this year." : "Done enough for this year.";
+  if (usesLeft(action, ctx.state, params) <= 0) return action.perYear === 1 || action.perYearPerPerson === 1 ? "Already done this year." : "Done enough for this year.";
   return action.blocked?.(ctx, params);
 }
 
@@ -84,6 +88,10 @@ export function performAction(prev: GameState, content: Content, actionId: strin
   }
 
   state.actionsThisYear[action.id] = (state.actionsThisYear[action.id] ?? 0) + 1;
+  if (typeof params.npcId === "string") {
+    const key = `${action.id}:${params.npcId}`;
+    state.actionsThisYear[key] = (state.actionsThisYear[key] ?? 0) + 1;
+  }
   const result = action.run(ctx, params);
   if (result && state.status === "alive") {
     const text = renderText(result.text, ctx);

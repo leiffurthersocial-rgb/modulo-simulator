@@ -7,6 +7,8 @@ import { COLLEGE_EVENTS } from "./college";
 import { YOUNG_ADULT_EVENTS } from "./youngAdult";
 import { WORK_EVENTS } from "./work";
 import { MONEY_EVENTS } from "./money";
+import { ROMANCE_EVENTS } from "./romance";
+import { FAMILY_EVENTS } from "./family";
 
 /** Every event in the game. Add new event files here. */
-export const ALL_EVENTS: readonly GameEvent[] = [...BABY_EVENTS, ...CHILDHOOD_EVENTS, ...SCHOOL_EVENTS, ...TEEN_EVENTS, ...COLLEGE_EVENTS, ...YOUNG_ADULT_EVENTS, ...WORK_EVENTS, ...MONEY_EVENTS];
+export const ALL_EVENTS: readonly GameEvent[] = [...BABY_EVENTS, ...CHILDHOOD_EVENTS, ...SCHOOL_EVENTS, ...TEEN_EVENTS, ...COLLEGE_EVENTS, ...YOUNG_ADULT_EVENTS, ...WORK_EVENTS, ...MONEY_EVENTS, ...ROMANCE_EVENTS, ...FAMILY_EVENTS];
