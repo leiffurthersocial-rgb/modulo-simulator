@@ -2,7 +2,7 @@ import { addLog } from "../log";
 import type { Rng } from "../rng";
 import { adjustSkill, adjustStat } from "../stats";
 import type { Country, GameState, Npc, NpcRole } from "../types";
-import { clamp } from "../util";
+import { clamp, formatMoney } from "../util";
 import { yearlyDeathChance } from "./death";
 
 const FAMILY_ROLES: readonly NpcRole[] = [
@@ -37,6 +37,22 @@ export function isFamily(npc: Npc): boolean {
   return FAMILY_ROLES.includes(npc.role);
 }
 
+/** Parents, grandparents and spouses leave you a share of their wealth, unless you were estranged. */
+export function inherit(state: GameState, npc: Npc, country: Country): void {
+  if (npc.wealth <= 0 || !["mother", "father", "grandparent", "spouse"].includes(npc.role)) return;
+  if (npc.closeness < 15) {
+    addLog(state, `${npc.firstName} left you out of the will.`, "bad");
+    return;
+  }
+  const heirs = npc.role === "spouse" ? 1 : 1 + Object.values(state.npcs).filter((n) => n.alive && (n.role === "sibling" || n.role === "halfSibling")).length;
+  const share = Math.round(npc.wealth / (npc.role === "grandparent" ? heirs * 3 : heirs));
+  if (share <= 0) return;
+  state.player.finance.cash += share;
+  npc.wealth = 0;
+  state.flags.inherited = Number(state.flags.inherited ?? 0) + share;
+  addLog(state, `You inherited ${formatMoney(country, share)} from ${npc.firstName}.`, "good");
+}
+
 /** Rough NPC health by age, since NPCs don't track a full stat block. */
 function npcHealth(age: number): number {
   return clamp(80 - Math.max(0, age - 45) * 1.1);
@@ -61,6 +77,7 @@ export function runNpcYear(state: GameState, rng: Rng, country: Country): void {
     if (rng.chance(yearlyDeathChance(npc.age, npcHealth(npc.age), country, state.difficulty))) {
       npc.alive = false;
       npc.deathAge = npc.age;
+      inherit(state, npc, country);
       if (npc.inContact && (isFamily(npc) || npc.closeness >= 40)) {
         const label = ROLE_LABEL[npc.role] ?? "friend";
         addLog(state, `Your ${label}, ${npc.firstName}, died at the age of ${npc.age}.`, "bad");
@@ -121,15 +138,6 @@ export function runPlayerDrift(state: GameState, rng: Rng): void {
   }
   // Chronic conditions too.
   for (const c of p.health.conditions) adjustStat(p, "health", -c.severity / 20);
-}
-
-/** Tenure and performance drift for the current job. Promotions and firing live in the career system. */
-export function runCareerYear(state: GameState, rng: Rng): void {
-  const job = state.player.career.job;
-  if (!job || state.player.crime.prison) return;
-  job.yearsInRole++;
-  job.yearsAtCompany++;
-  job.performance = clamp(Math.round(job.performance + rng.normal(0, 5) + (state.player.stats.smarts - 50) / 25));
 }
 
 /** Count down a prison sentence and release on completion. */

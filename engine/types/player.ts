@@ -107,6 +107,9 @@ export interface Finance {
   holdings: Holding[];
   /** Gross income received last year, for summaries and taxes. */
   lastYearIncome: number;
+  lastYearTax: number;
+  /** Yearly pension once retired, USD-equivalent. */
+  pension: number;
   bankruptcies: number;
 }
 

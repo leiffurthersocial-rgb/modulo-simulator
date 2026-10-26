@@ -95,7 +95,7 @@ export function Avatar({ appearance: a, age, colorKey = "x", size = 48, dead, cl
       </defs>
       <g clipPath={`url(#${clipId})`}>
         <rect width="100" height="100" fill={backdrop} />
-        {layers?.back?.(hair)}
+        {layers?.back?.(hair, masculine)}
         {/* neck and shoulders */}
         <rect x={small ? 44.5 : 43.5} y={66} width={small ? 11 : 13} height={18} fill={skinShadow} />
         <path
@@ -206,7 +206,7 @@ export function Avatar({ appearance: a, age, colorKey = "x", size = 48, dead, cl
             <path d="M45 26 Q49 18 52 25 Q54 20 57 26" stroke={hair} strokeWidth="1.8" fill="none" strokeLinecap="round" />
           )
         ) : (
-          layers?.front?.(hair, texture)
+          layers?.front?.(hair, texture, masculine)
         )}
       </g>
     </svg>

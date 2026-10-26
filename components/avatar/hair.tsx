@@ -6,8 +6,8 @@ import type { HairStyle } from "@/engine/types";
  * sits over the forehead. Coordinates are in the avatar's 100x100 viewBox.
  */
 interface HairLayers {
-  back?: (color: string) => React.ReactNode;
-  front?: (color: string, texture: string) => React.ReactNode;
+  back?: (color: string, masc: boolean) => React.ReactNode;
+  front?: (color: string, texture: string, masc: boolean) => React.ReactNode;
 }
 
 const sleekCap = "M28 46 C27 30 37 20 50 20 C63 20 73 30 72 46 C70 38 64 32 50 31 C36 32 30 38 28 46 Z";
@@ -63,11 +63,21 @@ export const HAIR_LAYERS: Record<HairStyle, HairLayers> = {
     ),
   },
   middlePart: {
-    back: (c) => <path d="M25 62 C24 38 32 19 50 19 C68 19 76 38 75 62 C72 64 69 63 68 60 L32 60 C31 63 28 64 25 62 Z" fill={c} />,
-    front: (c, t) => (
+    // Men get ear-length curtains; others get them down to the jaw.
+    back: (c, masc) =>
+      masc ? (
+        <path d="M26 52 C25 36 33 19 50 19 C67 19 75 36 74 52 C72 53 71 52 70 50 L30 50 C29 52 28 53 26 52 Z" fill={c} />
+      ) : (
+        <path d="M25 62 C24 38 32 19 50 19 C68 19 76 38 75 62 C72 64 69 63 68 60 L32 60 C31 63 28 64 25 62 Z" fill={c} />
+      ),
+    front: (c, t, masc) => (
       <>
         <path
-          d="M27 60 C25 34 36 19.5 50 19.5 C64 19.5 75 34 73 60 C71.5 60 70.5 59 70 57 C70 47 67 38 60 32 C56 29 52.5 27.5 50 25.5 C47.5 27.5 44 29 40 32 C33 38 30 47 30 57 C29.5 59 28.5 60 27 60 Z"
+          d={
+            masc
+              ? "M27.5 51 C26 34 36 19.5 50 19.5 C64 19.5 74 34 72.5 51 C71.5 51 70.8 50 70.4 48 C69.8 41 66.5 36 60 32 C56 29 52.5 27.5 50 25.5 C47.5 27.5 44 29 40 32 C33.5 36 30.2 41 29.6 48 C29.2 50 28.5 51 27.5 51 Z"
+              : "M27 60 C25 34 36 19.5 50 19.5 C64 19.5 75 34 73 60 C71.5 60 70.5 59 70 57 C70 47 67 38 60 32 C56 29 52.5 27.5 50 25.5 C47.5 27.5 44 29 40 32 C33 38 30 47 30 57 C29.5 59 28.5 60 27 60 Z"
+          }
           fill={c}
         />
         <path d="M50 21 L50 25.5 M44 27 Q36 34 33 46 M56 27 Q64 34 67 46" stroke={t} strokeWidth="0.8" fill="none" strokeLinecap="round" />

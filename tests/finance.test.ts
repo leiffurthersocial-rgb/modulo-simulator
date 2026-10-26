@@ -75,8 +75,10 @@ describe("runFinanceYear", () => {
     runFinanceYear(s, us);
     expect(s.player.finance.cash).toBe(0);
     const credit = s.player.finance.debts.find((d) => d.kind === "credit");
-    expect(credit?.balance).toBe(livingCost(us, false) - 1_000);
-    expect(netWorth(s)).toBe(-(livingCost(us, false) - 1_000));
+    // 1.5% interest on the 1,000 in savings softens the blow slightly.
+    const shortfall = livingCost(us, false) - 1_000 - 15;
+    expect(credit?.balance).toBe(shortfall);
+    expect(netWorth(s)).toBe(-shortfall);
   });
 
   it("never puts a minor into debt", () => {
@@ -85,5 +87,18 @@ describe("runFinanceYear", () => {
     runFinanceYear(s, us);
     expect(s.player.finance.cash).toBe(0);
     expect(s.player.finance.debts).toHaveLength(0);
+  });
+});
+
+describe("other income", () => {
+  it("adds side hustles, pension, and rent to taxable income", () => {
+    const s = lifeAtAge(40);
+    s.player.sideHustles.push({ id: "x", label: "Reselling", income: 5_000, sinceAge: 30 });
+    s.player.finance.pension = 10_000;
+    s.player.assets.push({ id: "h", kind: "house", name: "House", value: 200_000, purchasePrice: 200_000, boughtAtAge: 30, condition: 80, yearlyUpkeep: 0, rentedOut: true, catalogId: "starter-home" });
+    const summary = runFinanceYear(s, us);
+    expect(summary.other).toBe(5_000 + 10_000 + 9_000);
+    expect(summary.tax).toBe(incomeTax(24_000, us.taxBrackets));
+    expect(s.player.finance.lastYearTax).toBe(summary.tax);
   });
 });

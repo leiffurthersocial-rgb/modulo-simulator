@@ -51,6 +51,45 @@ export function OccupationPanel({ state, onClose, onCustom }: { state: GameState
           ]}
         />
       )}
+      {state.player.business && (
+        <InfoCard
+          title={state.player.business.name}
+          lines={[
+            ["Industry", state.player.business.industry],
+            ["Valuation", money(state.player.business.value)],
+            ["Last year's profit", money(state.player.business.lastProfit)],
+            ["Employees", String(state.player.business.employees)],
+          ]}
+        />
+      )}
+      {(state.player.sideHustles.length > 0 || state.player.finance.pension > 0) && (
+        <Section title="Other income">
+          {state.player.sideHustles.map((h) => (
+            <div key={h.id} className="flex justify-between border-b border-line px-3 py-2 text-sm last:border-b-0">
+              <span className="font-semibold">{h.label}</span>
+              <span className="text-muted">{money(h.income)}/yr</span>
+            </div>
+          ))}
+          {state.player.finance.pension > 0 && (
+            <div className="flex justify-between px-3 py-2 text-sm">
+              <span className="font-semibold">Pension</span>
+              <span className="text-muted">{money(state.player.finance.pension)}/yr</span>
+            </div>
+          )}
+        </Section>
+      )}
+      {state.player.career.history.length > 0 && (
+        <Section title="Work history">
+          {[...state.player.career.history].reverse().slice(0, 8).map((h, i) => (
+            <div key={i} className="flex justify-between gap-2 border-b border-line px-3 py-2 text-sm last:border-b-0">
+              <span className="truncate font-semibold">{h.title}</span>
+              <span className="shrink-0 text-muted">
+                {h.startAge}–{h.endAge} · {h.reason === "newJob" ? "moved on" : h.reason === "laidOff" ? "laid off" : h.reason}
+              </span>
+            </div>
+          ))}
+        </Section>
+      )}
       {state.player.education.degrees.length > 0 && (
         <Section title="Education">
           {state.player.education.degrees.map((d, i) => (

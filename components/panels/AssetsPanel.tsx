@@ -34,6 +34,11 @@ export function AssetsPanel({ state, onClose, onCustom }: { state: GameState; on
           </div>
         ))}
       </div>
+      {fin.lastYearIncome > 0 && (
+        <p className="mb-4 px-1 text-xs text-muted">
+          Last year you earned {money(fin.lastYearIncome)} and paid {money(fin.lastYearTax)} in taxes.
+        </p>
+      )}
       {state.player.assets.length > 0 && (
         <Section title="Owned">
           {state.player.assets.map((a) => (

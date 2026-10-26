@@ -1,5 +1,5 @@
 import type { EventRegistry } from "./events/registry";
-import type { Country, CountryId, FriendConfig, GameAction } from "./types";
+import type { CareerDef, Country, CountryId, FriendConfig, GameAction } from "./types";
 
 /**
  * Everything data-driven the engine needs. Passed into engine entry points so the
@@ -10,6 +10,11 @@ export interface Content {
   countries: Readonly<Record<CountryId, Country>>;
   friends: readonly FriendConfig[];
   actions: readonly GameAction[];
+  careers: readonly CareerDef[];
+}
+
+export function careerOf(content: Content, id: string): CareerDef | undefined {
+  return content.careers.find((c) => c.id === id);
 }
 
 export function countryOf(content: Content, id: CountryId): Country {

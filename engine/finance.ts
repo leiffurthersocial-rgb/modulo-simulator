@@ -45,6 +45,8 @@ export function yearsToPayOff(balance: number, rate: number, yearlyPayment: numb
 
 export interface FinanceSummary {
   income: number;
+  salary: number;
+  other: number;
   tax: number;
   living: number;
   upkeep: number;
@@ -61,7 +63,13 @@ export function runFinanceYear(state: GameState, country: Country): FinanceSumma
   const job = player.career.job;
   const inPrison = player.crime.prison !== undefined;
 
-  const income = job && !inPrison ? Math.round(job.salary) : 0;
+  const salary = job && !inPrison ? Math.round(job.salary) : 0;
+  const hustles = inPrison ? 0 : player.sideHustles.reduce((s, h) => s + h.income, 0);
+  const rent = player.assets.filter((a) => a.kind === "house" && a.rentedOut).reduce((s, a) => s + Math.round(a.value * 0.045), 0);
+  const businessProfit = player.business ? Math.max(0, player.business.lastProfit) : 0;
+  const other = hustles + rent + businessProfit + fin.pension;
+  const income = salary + other;
+  // Taxes are assessed on USD-equivalent income against the country's brackets (which are in local-scaled USD terms).
   const tax = incomeTax(income, country.taxBrackets);
   // College housing is folded into tuition.
   const inHigherEd = player.education.enrolled !== undefined && !["elementary", "middle", "high"].includes(player.education.enrolled.level);
@@ -74,8 +82,11 @@ export function runFinanceYear(state: GameState, country: Country): FinanceSumma
   for (const d of fin.debts) debtPaid += payDebtYear(d);
   fin.debts = fin.debts.filter((d) => d.balance > 0.01);
 
-  fin.cash = Math.round(fin.cash + income - tax - living - upkeep - debtPaid);
+  const businessLoss = player.business ? Math.min(0, player.business.lastProfit) : 0;
+  const interest = fin.cash > 0 ? Math.round(fin.cash * 0.015) : 0;
+  fin.cash = Math.round(fin.cash + income + businessLoss + interest - tax - living - upkeep - debtPaid);
   fin.lastYearIncome = income;
+  fin.lastYearTax = tax;
 
   if (fin.cash < 0) {
     if (player.age < 18) {
@@ -100,7 +111,7 @@ export function runFinanceYear(state: GameState, country: Country): FinanceSumma
     }
   }
 
-  return { income, tax, living, upkeep, debtPaid };
+  return { income, salary, other, tax, living, upkeep, debtPaid };
 }
 
 export function totalDebt(state: GameState): number {

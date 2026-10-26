@@ -147,7 +147,7 @@ export function newLife(content: Content, options: NewLifeOptions = {}): GameSta
     fame: 0,
     followers: 0,
     livesWithParents: true,
-    finance: { cash: 0, debts: [], holdings: [], lastYearIncome: 0, bankruptcies: 0 },
+    finance: { cash: 0, debts: [], holdings: [], lastYearIncome: 0, lastYearTax: 0, pension: 0, bankruptcies: 0 },
     education: { degrees: [], droppedOut: [] },
     career: { history: [], retired: false },
     assets: [],

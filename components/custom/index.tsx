@@ -2,6 +2,7 @@
 
 import type { ActionView, GameState } from "@/engine";
 import { OptionPicker } from "./OptionPicker";
+import { AssetDetail } from "./AssetDetail";
 
 export interface CustomUiProps {
   state: GameState;
@@ -15,7 +16,9 @@ type CustomUi = (props: CustomUiProps) => React.ReactNode;
  * Custom UIs for actions with a `ui` key (minigames, shops, pickers).
  * Keys may carry an argument after a colon, e.g. "asset:<id>".
  */
-const REGISTRY: Record<string, CustomUi> = {};
+const REGISTRY: Record<string, CustomUi> = {
+  asset: AssetDetail,
+};
 
 export function registerCustomUi(key: string, ui: CustomUi): void {
   REGISTRY[key] = ui;

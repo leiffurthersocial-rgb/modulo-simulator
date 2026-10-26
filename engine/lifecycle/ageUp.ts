@@ -10,7 +10,10 @@ import { startLogYear } from "../log";
 import { Rng } from "../rng";
 import type { GameState } from "../types";
 import { rollMortality } from "./death";
-import { runCareerYear, runNpcYear, runPlayerDrift, runPrisonYear } from "./yearly";
+import { runAssetYear } from "../assets";
+import { runBusinessYear } from "../business";
+import { runCareerYear } from "../career";
+import { runNpcYear, runPlayerDrift, runPrisonYear } from "./yearly";
 
 export function canAgeUp(state: GameState): boolean {
   return state.status === "alive" && state.pending.length === 0;
@@ -64,7 +67,13 @@ export function ageUp(prev: GameState, content: Content): GameState {
   runNpcYear(state, rng, country);
   runPlayerDrift(state, rng);
   runEducationYear(state, rng);
-  runCareerYear(state, rng);
+  runCareerYear(state, rng, content, country);
+  if (state.status !== "alive") {
+    state.rngState = rng.state;
+    return state;
+  }
+  runBusinessYear(state, rng);
+  runAssetYear(state, rng);
   runFinanceYear(state, country);
   runPrisonYear(state);
 
