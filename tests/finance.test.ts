@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { COUNTRY_BY_ID } from "@/data/countries";
-import { incomeTax, livingCost, netWorth, payDebtYear, runFinanceYear, yearsToPayOff } from "@/engine/finance";
+import { LIFESTYLE_SHARE, STATE_PENSION, creditLimit, incomeTax, livingCost, payDebtYear, runFinanceYear, yearsToPayOff } from "@/engine/finance";
 import type { Debt } from "@/engine/types";
 import { lifeAtAge } from "./fixtures";
 
@@ -64,11 +64,13 @@ describe("runFinanceYear", () => {
     };
     const summary = runFinanceYear(s, us);
     expect(summary.income).toBe(50_000);
-    expect(summary.living).toBe(0);
-    expect(s.player.finance.cash).toBe(50_000 - incomeTax(50_000, us.taxBrackets));
+    // Living at home there's no rent, but lifestyle spending eats most of the surplus.
+    const takeHome = 50_000 - incomeTax(50_000, us.taxBrackets);
+    expect(summary.living).toBe(Math.round(takeHome * LIFESTYLE_SHARE));
+    expect(s.player.finance.cash).toBe(takeHome - Math.round(takeHome * LIFESTYLE_SHARE));
   });
 
-  it("charges living costs on your own and rolls shortfalls into credit card debt", () => {
+  it("charges living costs on your own and covers shortfalls with credit, up to a limit", () => {
     const s = lifeAtAge(25);
     s.player.livesWithParents = false;
     s.player.finance.cash = 1_000;
@@ -77,8 +79,24 @@ describe("runFinanceYear", () => {
     const credit = s.player.finance.debts.find((d) => d.kind === "credit");
     // 1.5% interest on the 1,000 in savings softens the blow slightly.
     const shortfall = livingCost(us, false) - 1_000 - 15;
-    expect(credit?.balance).toBe(shortfall);
-    expect(netWorth(s)).toBe(-shortfall);
+    const limit = creditLimit(s, us);
+    expect(credit?.balance).toBe(Math.min(shortfall, limit));
+    // Beyond the limit you go without instead of borrowing more.
+    if (shortfall > limit) expect(s.log.at(-1)?.entries.some((e) => e.text.includes("make ends meet"))).toBe(true);
+  });
+
+  it("debt can't spiral forever: hopeless debt triggers bankruptcy", () => {
+    const s = lifeAtAge(70);
+    s.player.livesWithParents = false;
+    s.player.finance.debts.push({ id: "c", kind: "credit", label: "Card", balance: 200_000, rate: 0.22, yearlyPayment: 60_000 });
+    runFinanceYear(s, us);
+    expect(s.player.finance.debts).toHaveLength(0);
+    expect(s.player.finance.bankruptcies).toBe(1);
+  });
+
+  it("everyone gets a basic state pension from 67", () => {
+    const s = lifeAtAge(67);
+    expect(runFinanceYear(s, us).other).toBe(STATE_PENSION);
   });
 
   it("never puts a minor into debt", () => {
@@ -98,7 +116,22 @@ describe("other income", () => {
     s.player.assets.push({ id: "h", kind: "house", name: "House", value: 200_000, purchasePrice: 200_000, boughtAtAge: 30, condition: 80, yearlyUpkeep: 0, rentedOut: true, catalogId: "starter-home" });
     const summary = runFinanceYear(s, us);
     expect(summary.other).toBe(5_000 + 10_000 + 9_000);
+    expect(summary.other).toBeGreaterThan(0);
     expect(summary.tax).toBe(incomeTax(24_000, us.taxBrackets));
     expect(s.player.finance.lastYearTax).toBe(summary.tax);
+  });
+});
+
+describe("foreclosure", () => {
+  it("repossesses a house after two years of missed payments", () => {
+    const s = lifeAtAge(40);
+    s.player.livesWithParents = false;
+    s.player.assets.push({ id: "h", kind: "house", name: "Starter Home", value: 300_000, purchasePrice: 300_000, boughtAtAge: 35, condition: 80, yearlyUpkeep: 0, rentedOut: false, catalogId: "starter-home" });
+    s.player.finance.debts.push({ id: "m", kind: "mortgage", label: "Mortgage", balance: 250_000, rate: 0.065, yearlyPayment: 19_000, assetId: "h" });
+    runFinanceYear(s, us);
+    expect(s.player.assets).toHaveLength(1);
+    runFinanceYear(s, us);
+    expect(s.player.assets).toHaveLength(0);
+    expect(s.player.finance.debts.find((d) => d.kind === "mortgage")).toBeUndefined();
   });
 });

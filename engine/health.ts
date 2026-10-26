@@ -93,7 +93,8 @@ export function runHealthYear(state: GameState, rng: Rng): void {
   for (const kind of Object.keys(add) as AddictionKind[]) {
     const level = add[kind] ?? 0;
     if (level <= 0) continue;
-    add[kind] = clamp(level + rng.int(-3, 5));
+    // Light habits fade on their own; heavy ones feed themselves.
+    add[kind] = clamp(level + (level < 30 ? rng.int(-6, 2) : level < 60 ? rng.int(-3, 3) : rng.int(-2, 4)));
     if (kind === "drugs" && rng.chance((add[kind] ?? 0) / 900)) {
       killPlayer(state, "overdose", `You died of an overdose at ${player.age}.`);
       return;

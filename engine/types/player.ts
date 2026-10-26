@@ -92,6 +92,8 @@ export interface Debt {
   yearlyPayment: number;
   /** Asset this debt is secured against, if any. */
   assetId?: string;
+  /** Consecutive years the scheduled payment wasn't fully made. */
+  missed?: number;
 }
 
 export interface Holding {

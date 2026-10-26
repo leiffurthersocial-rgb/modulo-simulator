@@ -10,7 +10,8 @@
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "simulate": "vitest run --config vitest.sim.config.ts"
   },
   "dependencies": {
     "lucide-react": "0.577.0",
