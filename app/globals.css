@@ -3,31 +3,117 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 :root {
-  --bg: #f4f5fb;
+  --bg: #eef0f7;
   --fg: #16181d;
   --card: #ffffff;
+  --card-2: #f5f6fb;
+  --line: #e3e6ef;
   --muted: #6b7280;
   --accent: #6d4aff;
+  --accent-fg: #ffffff;
+  --good: #16a34a;
+  --bad: #dc2626;
+  --major: #6d4aff;
+  --stat-happiness: #f5a623;
+  --stat-health: #22c55e;
+  --stat-smarts: #3b82f6;
+  --stat-looks: #ec4899;
 }
 
 .dark {
-  --bg: #0f1117;
+  --bg: #0d0f15;
   --fg: #eef0f6;
-  --card: #1a1d27;
+  --card: #181b25;
+  --card-2: #20242f;
+  --line: #2a2f3c;
   --muted: #9aa1b2;
-  --accent: #9b85ff;
+  --accent: #8f78ff;
+  --accent-fg: #ffffff;
+  --good: #4ade80;
+  --bad: #f87171;
+  --major: #a99bff;
 }
 
 @theme inline {
   --color-bg: var(--bg);
   --color-fg: var(--fg);
   --color-card: var(--card);
+  --color-card-2: var(--card-2);
+  --color-line: var(--line);
   --color-muted: var(--muted);
   --color-accent: var(--accent);
+  --color-accent-fg: var(--accent-fg);
+  --color-good: var(--good);
+  --color-bad: var(--bad);
+  --color-major: var(--major);
 }
 
 html,
 body {
   background: var(--bg);
   color: var(--fg);
+  -webkit-tap-highlight-color: transparent;
+}
+
+@keyframes sheet-in {
+  from {
+    transform: translateY(24px);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+
+@keyframes pop-in {
+  from {
+    transform: scale(0.94);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.anim-sheet {
+  animation: sheet-in 0.22s ease-out;
+}
+.anim-pop {
+  animation: pop-in 0.18s ease-out;
+}
+.anim-fade {
+  animation: fade-in 0.25s ease-out;
+}
+
+.reduce-motion *,
+.reduce-motion *::before,
+.reduce-motion *::after {
+  animation: none !important;
+  transition: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .anim-sheet,
+  .anim-pop,
+  .anim-fade {
+    animation: none;
+  }
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  scrollbar-width: none;
 }

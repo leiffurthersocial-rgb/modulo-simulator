@@ -6,3 +6,4 @@ export * from "./friend";
 export * from "./player";
 export * from "./state";
 export * from "./event";
+export * from "./action";

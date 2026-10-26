@@ -1,3 +1,4 @@
+import type { Content } from "../content";
 import type { Rng } from "../rng";
 import type { Amount, EventId, FlagValue, NpcId, SkillKey, StatKey } from "./common";
 import type { Country } from "./country";
@@ -14,6 +15,7 @@ export interface EventContext {
   player: Player;
   country: Country;
   rng: Rng;
+  content: Content;
   /** The NPC bound to this event (see GameEvent.npc), if any. */
   npc?: Npc;
   vars: TemplateVars;

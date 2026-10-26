@@ -27,7 +27,7 @@ export function presentationFor(gender: Gender): GenderPresentation {
 
 /** Hair styles random generation may give each presentation. Duplicates weight common styles. */
 export const HAIR_BY_PRESENTATION: Record<GenderPresentation, readonly HairStyle[]> = {
-  masculine: ["short", "short", "mod", "sweptBack", "buzz", "curly", "spiky", "middlePart", "wavy", "afro", "bald"],
+  masculine: ["short", "short", "mod", "mod", "sweptBack", "buzz", "curly", "spiky", "middlePart", "afro", "bald"],
   feminine: ["long", "long", "ponytail", "bun", "bob", "curly", "wavy", "braids", "middlePart", "pixie", "afro"],
   androgynous: ["mod", "short", "curly", "bob", "middlePart", "pixie", "wavy", "long", "buzz"],
 };

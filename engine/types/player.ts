@@ -110,7 +110,7 @@ export interface Finance {
   bankruptcies: number;
 }
 
-export type AssetKind = "house" | "car" | "boat" | "jewelry" | "luxury" | "instrument";
+export type AssetKind = "house" | "car" | "boat" | "jewelry" | "luxury" | "instrument" | "pet";
 
 export interface Asset {
   id: string;
@@ -123,6 +123,10 @@ export interface Asset {
   condition: number;
   yearlyUpkeep: number;
   rentedOut: boolean;
+  /** Catalog id in /data/assets, used for flavor and resale rules. */
+  catalogId: string;
+  /** Pets only: the pet's age. */
+  age?: number;
 }
 
 // ---------------------------------------------------------------- health
@@ -179,6 +183,44 @@ export interface LifeGoal {
   completedAtAge?: number;
 }
 
+// ---------------------------------------------------------------- side systems
+
+export interface PoliticalOffice {
+  /** Id in /data/politics. */
+  officeId: string;
+  title: string;
+  termEndsAtAge: number;
+  /** 0-100 public approval. */
+  approval: number;
+  termsServed: number;
+}
+
+export interface Business {
+  name: string;
+  industry: string;
+  /** Valuation, USD-equivalent. */
+  value: number;
+  /** Last year's profit (can be negative). */
+  lastProfit: number;
+  foundedAtAge: number;
+  employees: number;
+}
+
+export interface SideHustle {
+  id: string;
+  label: string;
+  /** Yearly income, USD-equivalent (already country-scaled). */
+  income: number;
+  sinceAge: number;
+}
+
+/** A baby on the way, carried by the player or their partner. */
+export interface Pregnancy {
+  dueAtAge: number;
+  otherParentId?: string;
+  carriedByPlayer: boolean;
+}
+
 // ---------------------------------------------------------------- player
 
 export const WEALTH_TIERS = ["poor", "working", "middle", "upper", "rich"] as const;
@@ -211,4 +253,10 @@ export interface Player {
   health: HealthState;
   crime: CrimeState;
   goals: LifeGoal[];
+  office?: PoliticalOffice;
+  business?: Business;
+  sideHustles: SideHustle[];
+  pregnancy?: Pregnancy;
+  /** Highest political office level reached (0 = never held office). */
+  highestOfficeLevel: number;
 }

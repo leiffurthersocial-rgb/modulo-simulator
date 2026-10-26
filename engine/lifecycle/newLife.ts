@@ -153,6 +153,8 @@ export function newLife(content: Content, options: NewLifeOptions = {}): GameSta
     health: { conditions: [], addictions: {} },
     crime: { record: [], notoriety: 0 },
     goals: [],
+    sideHustles: [],
+    highestOfficeLevel: 0,
   };
 
   const state: GameState = {
@@ -173,6 +175,11 @@ export function newLife(content: Content, options: NewLifeOptions = {}): GameSta
     achievements: [],
     cameos: { destined: [], met: [] },
     status: "alive",
+    notices: [],
+    actionsThisYear: {},
+    market: { prices: {}, history: {} },
+    timeline: [],
+    rewindsLeft: options.mode === "casual" ? GAME_CONFIG.casualRewinds : 0,
   };
 
   startLogYear(state);

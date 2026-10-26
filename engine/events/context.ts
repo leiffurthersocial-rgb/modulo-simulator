@@ -9,5 +9,5 @@ export function makeContext(
   npc?: Npc,
   vars: TemplateVars = {},
 ): EventContext {
-  return { state, player: state.player, country: countryOf(content, state.player.countryId), rng, npc, vars };
+  return { state, player: state.player, country: countryOf(content, state.player.countryId), rng, content, npc, vars };
 }

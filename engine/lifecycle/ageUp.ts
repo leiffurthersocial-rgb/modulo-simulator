@@ -4,7 +4,8 @@ import { makeContext } from "../events/context";
 import { fireEvent } from "../events/run";
 import { isEligible, weightOf } from "../events/select";
 import { runEducationYear } from "../education";
-import { runFinanceYear } from "../finance";
+import { netWorth, runFinanceYear } from "../finance";
+import { postProcess } from "../postProcess";
 import { startLogYear } from "../log";
 import { Rng } from "../rng";
 import type { GameState } from "../types";
@@ -56,6 +57,8 @@ export function ageUp(prev: GameState, content: Content): GameState {
 
   state.player.age++;
   state.year++;
+  state.actionsThisYear = {};
+  state.notices = [];
   startLogYear(state);
 
   runNpcYear(state, rng, country);
@@ -66,6 +69,8 @@ export function ageUp(prev: GameState, content: Content): GameState {
   runPrisonYear(state);
 
   if (!rollMortality(state, rng, country)) runEvents(state, rng, content);
+  postProcess(state, rng, content);
+  state.timeline.push({ age: state.player.age, netWorth: netWorth(state), stats: { ...state.player.stats } });
 
   state.rngState = rng.state;
   return state;

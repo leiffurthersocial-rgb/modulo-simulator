@@ -1,4 +1,4 @@
-import type { EventId, FlagValue, NpcId } from "./common";
+import type { EventId, FlagValue, NpcId, Stats } from "./common";
 import type { CameoRecord, FriendDestiny } from "./friend";
 import type { Npc } from "./npc";
 import type { Player } from "./player";
@@ -62,6 +62,35 @@ export interface DeathInfo {
   text: string;
 }
 
+/** A message popup without choices (action results, big news). Dismissed by the player. */
+export interface Notice {
+  id: string;
+  title?: string;
+  text: string;
+  tone: Tone;
+  npcId?: NpcId;
+}
+
+export interface MarketState {
+  /** Current price per unit, USD-equivalent. */
+  prices: Record<string, number>;
+  /** Yearly price history, oldest first. */
+  history: Record<string, number[]>;
+}
+
+/** One point per year for summary charts. */
+export interface TimelinePoint {
+  age: number;
+  netWorth: number;
+  stats: Stats;
+}
+
+/** Things carried over when continuing as your child (legacy mode). */
+export interface Legacy {
+  parentName: string;
+  inheritance: number;
+}
+
 export type GameMode = "normal" | "casual";
 
 export interface Difficulty {
@@ -101,4 +130,12 @@ export interface GameState {
   };
   status: "alive" | "dead";
   death?: DeathInfo;
+  notices: Notice[];
+  /** Action id -> uses this year. Reset on age up. */
+  actionsThisYear: Record<string, number>;
+  market: MarketState;
+  timeline: TimelinePoint[];
+  /** "What if?" rewinds left (casual mode). */
+  rewindsLeft: number;
+  legacy?: Legacy;
 }

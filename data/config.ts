@@ -10,6 +10,9 @@ export const GAME_CONFIG = {
   /** Babies and toddlers get quieter years. */
   eventsPerYearInfant: [60, 35, 5, 0] as readonly number[],
 
+  /** "What if?" rewinds per life in casual mode. */
+  casualRewinds: 3,
+
   defaultDifficulty: { mortality: 1, eventRate: 1, economy: 1 } satisfies Difficulty,
 
   mortality: {

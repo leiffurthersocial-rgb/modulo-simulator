@@ -9,4 +9,5 @@ export const DEFAULT_CONTENT: Content = {
   events: new EventRegistry(ALL_EVENTS),
   countries: COUNTRY_BY_ID,
   friends: FRIENDS,
+  actions: [],
 };

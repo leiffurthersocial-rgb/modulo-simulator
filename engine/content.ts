@@ -1,5 +1,5 @@
 import type { EventRegistry } from "./events/registry";
-import type { Country, CountryId, FriendConfig } from "./types";
+import type { Country, CountryId, FriendConfig, GameAction } from "./types";
 
 /**
  * Everything data-driven the engine needs. Passed into engine entry points so the
@@ -9,6 +9,7 @@ export interface Content {
   events: EventRegistry;
   countries: Readonly<Record<CountryId, Country>>;
   friends: readonly FriendConfig[];
+  actions: readonly GameAction[];
 }
 
 export function countryOf(content: Content, id: CountryId): Country {
