@@ -6,7 +6,7 @@ export { countryOf } from "./content";
 export { EventRegistry, validateEvents } from "./events/registry";
 export { newLife, type NewLifeOptions } from "./lifecycle/newLife";
 export { ageUp, canAgeUp } from "./lifecycle/ageUp";
-export { choose } from "./game";
+export { choose, debugForceCameo } from "./game";
 export { performAction, listActions, dismissNotice, findAction, actionOptions, type ActionView } from "./actions";
 export { netWorth, totalDebt, incomeTax } from "./finance";
 export { ageBracket, APPEARANCE_DEFAULTS } from "./appearance";

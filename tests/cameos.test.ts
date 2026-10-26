@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { DEFAULT_CONTENT } from "@/data";
 import { GAME_CONFIG } from "@/data/config";
 import { FRIENDS } from "@/data/friends";
 import { APPEARANCE_DEFAULTS } from "@/engine/appearance";
@@ -7,6 +8,8 @@ import { defineEvents } from "@/engine/events/helpers";
 import { fireEvent } from "@/engine/events/run";
 import { Rng } from "@/engine/rng";
 import { simulateLife } from "@/engine/sim";
+import { debugForceCameo } from "@/engine/game";
+import { newLife } from "@/engine/lifecycle/newLife";
 import { contentWith, freshLife, lifeAtAge } from "./fixtures";
 
 const cfg = GAME_CONFIG.friendCameos;
@@ -138,5 +141,41 @@ describe("cameo slots", () => {
     const expected = 400 * FRIENDS.length * cfg.baseChancePerLife;
     expect(destined).toBeGreaterThan(expected * 0.5);
     expect(destined).toBeLessThan(expected * 1.5);
+  });
+});
+
+describe("cameo fallback and debug", () => {
+  it("an overdue destined friend shows up through the chance-meeting event", () => {
+    const content = DEFAULT_CONTENT;
+    const s = lifeAtAge(30, "fallback", content);
+    s.cameos.destined = [{ friendId: "till", earliestAge: 10 }];
+    const event = content.events.get("cameo-chance-meeting")!;
+    fireEvent(s, Rng.fromSeed("fb"), content, event);
+    expect(s.cameos.met.map((m) => m.friendId)).toEqual(["till"]);
+    const npc = s.npcs[s.cameos.met[0]!.npcId]!;
+    expect(npc.firstName).toBe("Till");
+    expect(s.log.at(-1)?.entries.at(-1)?.text).toContain("Till");
+    expect(s.log.at(-1)?.entries.at(-1)?.text).not.toMatch(/[{}]/);
+  });
+
+  it("debugForceCameo spawns a friend once per life", () => {
+    let s = lifeAtAge(25, "force", DEFAULT_CONTENT);
+    s = debugForceCameo(s, DEFAULT_CONTENT, "jovan");
+    expect(s.cameos.met).toHaveLength(1);
+    expect(debugForceCameo(s, DEFAULT_CONTENT, "jovan")).toBe(s);
+  });
+
+  it("most destined friends actually appear before the life ends", () => {
+    const eager = FRIENDS.map((f) => ({ ...f, rarity: 6 }));
+    const c = { ...DEFAULT_CONTENT, friends: eager };
+    let destined = 0;
+    let met = 0;
+    for (let i = 0; i < 60; i++) {
+      const start = newLife(c, { seed: `real${i}`, year: 2000 });
+      destined += start.cameos.destined.length;
+      met += simulateLife(c, { seed: `real${i}`, year: 2000 }).cameos.met.length;
+    }
+    expect(destined).toBeGreaterThan(20);
+    expect(met / destined).toBeGreaterThan(0.75);
   });
 });

@@ -76,3 +76,33 @@ export function spawnFriendNpc(
   unlockAchievement(state, CAMEO_ACHIEVEMENT);
   return npc;
 }
+
+/** A believable role for a friend given what the player is doing right now. */
+export function cameoRoleFor(state: GameState, friend: FriendConfig): NpcRole | undefined {
+  const p = state.player;
+  const school = p.education.enrolled?.level;
+  const preferences: NpcRole[] = [];
+  if (p.crime.prison) preferences.push("cellmate");
+  if (school === "college") preferences.push("collegeRoommate", "classmate");
+  else if (school) preferences.push("classmate", "teammate");
+  if (p.career.job && !p.career.job.partTime) preferences.push("coworker", "boss");
+  if (p.age >= 16) preferences.push("gymBuddy", "bandmate", "travelBuddy", "neighbor");
+  preferences.push("friend", "neighbor");
+  return preferences.find((r) => friend.roles.includes(r)) ?? friend.roles[0];
+}
+
+/** Destined friends who are overdue (no NPC slot came along), oldest first. */
+export function overdueDestinies(state: GameState, graceYears = 2): FriendDestiny[] {
+  return state.cameos.destined.filter((d) => d.earliestAge + graceYears <= state.player.age).sort((a, b) => a.earliestAge - b.earliestAge);
+}
+
+/** Debug: bring a friend into this life right now, in a fitting role. Returns the new NPC. */
+export function forceCameo(state: GameState, rng: Rng, content: Content, friendId: string): Npc | undefined {
+  const friend = content.friends.find((f) => f.id === friendId);
+  if (!friend || state.cameos.met.some((m) => m.friendId === friendId)) return undefined;
+  const role = cameoRoleFor(state, friend);
+  if (!role) return undefined;
+  const country = content.countries[state.player.countryId];
+  if (!country) return undefined;
+  return spawnFriendNpc(state, rng, country, friend, role, 50);
+}

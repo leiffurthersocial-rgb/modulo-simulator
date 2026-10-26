@@ -5,6 +5,7 @@ import { DEFAULT_CONTENT } from "@/data";
 import {
   ageUp as engineAgeUp,
   choose as engineChoose,
+  debugForceCameo,
   deserializeState,
   dismissNotice as engineDismiss,
   newLife,
@@ -40,6 +41,8 @@ interface GameStore {
   choose(uid: string, choiceId: string): void;
   act(actionId: string, params?: ActionParams): void;
   dismissNotice(id: string): void;
+  /** Debug only: spawn a friend cameo into the current life. */
+  forceCameo(friendId: string): void;
   rewind(): void;
   openSlot(slot: number): void;
   deleteSlot(slot: number): void;
@@ -121,6 +124,11 @@ export const useGame = create<GameStore>((set, get) => {
     act(actionId, params) {
       const { game } = get();
       if (game) commit(performAction(game, DEFAULT_CONTENT, actionId, params));
+    },
+
+    forceCameo(friendId) {
+      const { game } = get();
+      if (game) commit(debugForceCameo(game, DEFAULT_CONTENT, friendId));
     },
 
     dismissNotice(id) {
