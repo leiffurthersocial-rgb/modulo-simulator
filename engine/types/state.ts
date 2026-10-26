@@ -62,7 +62,7 @@ export interface DeathInfo {
   text: string;
 }
 
-export type GameMode = "normal" | "casual" | "daily";
+export type GameMode = "normal" | "casual";
 
 export interface Difficulty {
   /** Multiplier on yearly mortality risk. */

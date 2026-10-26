@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { Rng, dailySeed, hashSeed } from "@/engine/rng";
+import { Rng, hashSeed } from "@/engine/rng";
 
 describe("Rng", () => {
   it("is deterministic for the same seed", () => {
@@ -57,9 +57,8 @@ describe("Rng", () => {
     expect(new Set(out).size).toBe(3);
   });
 
-  it("daily seed is stable for a date", () => {
-    const d = new Date("2026-10-26T15:00:00Z");
-    expect(dailySeed(d)).toBe("daily-2026-10-26");
-    expect(hashSeed(dailySeed(d))).toBe(hashSeed("daily-2026-10-26"));
+  it("hashes seeds stably", () => {
+    expect(hashSeed("abc")).toBe(hashSeed("abc"));
+    expect(hashSeed("abc")).not.toBe(hashSeed("abd"));
   });
 });

@@ -1,4 +1,4 @@
-import { randomAppearance } from "./appearance";
+import { fitAppearanceToGender, randomAppearance } from "./appearance";
 import type { Rng } from "./rng";
 import {
   PERSONALITY_TRAITS,
@@ -35,6 +35,8 @@ export interface NpcSpec {
   firstName?: string;
   lastName?: string;
   appearance?: Appearance;
+  /** Use `appearance` exactly as given (friend cameos). Otherwise it is fitted to the gender. */
+  exactAppearance?: boolean;
   traits?: PersonalityTrait[];
   closeness?: number;
   occupation?: string;
@@ -56,7 +58,11 @@ export function createNpc(state: GameState, rng: Rng, country: Country, spec: Np
     pronouns: pronounsFor(gender),
     age: Math.max(0, spec.age),
     alive: true,
-    appearance: spec.appearance ?? randomAppearance(rng, gender),
+    appearance: spec.appearance
+      ? spec.exactAppearance
+        ? spec.appearance
+        : fitAppearanceToGender(rng, spec.appearance, gender)
+      : randomAppearance(rng, gender),
     traits: spec.traits ?? randomTraits(rng),
     role: spec.role,
     closeness: spec.closeness ?? 50,

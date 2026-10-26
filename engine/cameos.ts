@@ -1,5 +1,5 @@
 import { GAME_CONFIG } from "@/data/config";
-import { APPEARANCE_DEFAULTS } from "./appearance";
+import { APPEARANCE_DEFAULTS, presentationFor } from "./appearance";
 import { unlockAchievement } from "./achievements";
 import type { Content } from "./content";
 import { createNpc, randomTraits } from "./npc";
@@ -62,7 +62,9 @@ export function spawnFriendNpc(
     age: state.player.age + rng.int(lo, hi),
     gender,
     firstName: friend.name,
-    appearance: { ...APPEARANCE_DEFAULTS, ...friend.appearance },
+    // A friend's pinned look is used exactly; presentation follows their pronouns unless pinned too.
+    appearance: { ...APPEARANCE_DEFAULTS, presentation: presentationFor(gender), ...friend.appearance },
+    exactAppearance: true,
     traits: friend.traits.length > 0 ? [...friend.traits] : randomTraits(rng),
     closeness,
   });

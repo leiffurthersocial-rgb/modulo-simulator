@@ -1,6 +1,6 @@
 /** Public engine API. UI and store code should import from "@/engine" only. */
 export * from "./types";
-export { Rng, dailySeed, randomSeed, hashSeed } from "./rng";
+export { Rng, randomSeed, hashSeed } from "./rng";
 export type { Content } from "./content";
 export { countryOf } from "./content";
 export { EventRegistry, validateEvents } from "./events/registry";

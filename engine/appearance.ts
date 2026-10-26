@@ -25,7 +25,8 @@ export function presentationFor(gender: Gender): GenderPresentation {
   return gender === "male" ? "masculine" : gender === "female" ? "feminine" : "androgynous";
 }
 
-const HAIR_BY_PRESENTATION: Record<GenderPresentation, readonly HairStyle[]> = {
+/** Hair styles random generation may give each presentation. Duplicates weight common styles. */
+export const HAIR_BY_PRESENTATION: Record<GenderPresentation, readonly HairStyle[]> = {
   masculine: ["short", "short", "mod", "sweptBack", "buzz", "curly", "spiky", "middlePart", "wavy", "afro", "bald"],
   feminine: ["long", "long", "ponytail", "bun", "bob", "curly", "wavy", "braids", "middlePart", "pixie", "afro"],
   androgynous: ["mod", "short", "curly", "bob", "middlePart", "pixie", "wavy", "long", "buzz"],
@@ -55,6 +56,22 @@ export const APPEARANCE_DEFAULTS: Appearance = {
   presentation: "androgynous",
   greysWithAge: true,
 };
+
+/**
+ * Make an appearance read correctly for a gender: presentation follows gender, women never
+ * get facial hair, and hair styles outside the gender's pool are replaced. Applied to every
+ * generated NPC so men look like men and women look like women.
+ */
+export function fitAppearanceToGender(rng: Rng, appearance: Appearance, gender: Gender): Appearance {
+  const presentation = presentationFor(gender);
+  const pool = HAIR_BY_PRESENTATION[presentation];
+  return {
+    ...appearance,
+    presentation,
+    facialHair: presentation === "feminine" ? "none" : appearance.facialHair,
+    hairStyle: pool.includes(appearance.hairStyle) ? appearance.hairStyle : rng.pick(pool),
+  };
+}
 
 export function randomAppearance(rng: Rng, gender: Gender): Appearance {
   const presentation = presentationFor(gender);

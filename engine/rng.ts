@@ -19,12 +19,7 @@ export function hashSeed(seed: string): number {
   return (h1 ^ h2) >>> 0;
 }
 
-/** A seed string for "today" (UTC), shared by every player: the daily challenge. */
-export function dailySeed(date: Date = new Date()): string {
-  return `daily-${date.toISOString().slice(0, 10)}`;
-}
-
-/** A fresh random seed string for a new, non-daily life. */
+/** A fresh random seed string for a new life. */
 export function randomSeed(): string {
   return Math.random().toString(36).slice(2, 10);
 }
