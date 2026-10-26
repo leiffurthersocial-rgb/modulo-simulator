@@ -3,6 +3,7 @@
 import { Avatar } from "@/components/avatar/Avatar";
 import { Section, Sheet } from "@/components/ui/Sheet";
 import { DEFAULT_CONTENT } from "@/data";
+import { GOAL_BY_ID } from "@/data/goals";
 import { countryOf, statusLabel, type GameState, type SkillKey } from "@/engine";
 
 const SKILLS: [SkillKey, string][] = [
@@ -42,6 +43,25 @@ export function ProfilePanel({ state, onClose, extra }: { state: GameState; onCl
           <div className="text-sm text-muted">{statusLabel(state)}</div>
         </div>
       </div>
+      {p.goals.length > 0 && (
+        <Section title="Life goals">
+          {p.goals.map((g) => {
+            const def = GOAL_BY_ID[g.id];
+            if (!def) return null;
+            return (
+              <div key={g.id} className="flex items-start gap-2 border-b border-line px-3 py-2 last:border-b-0">
+                <span className={`mt-0.5 text-base ${g.completedAtAge !== undefined ? "text-good" : "text-muted"}`} aria-hidden>
+                  {g.completedAtAge !== undefined ? "✓" : "○"}
+                </span>
+                <span className="flex-1">
+                  <span className={`block text-sm font-semibold ${g.completedAtAge !== undefined ? "line-through opacity-70" : ""}`}>{def.title}</span>
+                  <span className="block text-xs text-muted">{g.completedAtAge !== undefined ? `Done at ${g.completedAtAge}` : def.description}</span>
+                </span>
+              </div>
+            );
+          })}
+        </Section>
+      )}
       <Section title="Skills">
         {SKILLS.map(([k, label]) => (
           <Bar key={k} label={label} value={p.skills[k]} />

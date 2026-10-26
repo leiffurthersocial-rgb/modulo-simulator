@@ -44,7 +44,39 @@ function crimeAction(def: CrimeDef): Omit<GameAction, "section"> {
   };
 }
 
-export const CRIME_ACTIONS = defineActions("crime", CRIMES.map(crimeAction));
+export const CRIME_ACTIONS = defineActions("crime", [
+  ...CRIMES.map(crimeAction),
+  {
+    id: "crime-heist",
+    label: "Plan a heist",
+    description: "Crack the vault. Timing is everything.",
+    icon: "Bomb",
+    ui: "heist",
+    perYear: 1,
+    visible: (ctx) => ctx.player.age >= 18,
+    run: () => undefined,
+  },
+  {
+    id: "crime-heist-settle",
+    label: "Heist result",
+    internal: true,
+    run(ctx, p) {
+      ctx.state.actionsThisYear["crime-heist"] = 1;
+      const score = clamp(Math.round(Number(p.score) || 0), 0, 3);
+      ctx.state.flags.crimesCommitted = Number(ctx.state.flags.crimesCommitted ?? 0) + 1;
+      adjustKarma(ctx.player, -12);
+      if (score === 3 || (score === 2 && ctx.rng.chance(0.5))) {
+        const haul = Math.round(ctx.rng.int(score === 3 ? 400_000 : 80_000, score === 3 ? 3_000_000 : 400_000) * ctx.country.costIndex);
+        ctx.player.finance.cash += haul;
+        ctx.player.crime.notoriety = clamp(ctx.player.crime.notoriety + 20);
+        ctx.state.flags.heistPulled = true;
+        return { title: "Clean getaway", text: `The vault swung open. You and your crew vanished with ${formatMoney(ctx.country, haul)}.`, tone: "major" };
+      }
+      arrestFor(ctx, "armed robbery", [8, 25]);
+      return;
+    },
+  },
+]);
 
 const METHODS = [
   { id: "poison", label: "Poison them", difficulty: 55, caught: 0.35 },

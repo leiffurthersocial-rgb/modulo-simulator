@@ -1,7 +1,9 @@
 import { GAME_CONFIG } from "@/data/config";
+import { SECURITIES } from "@/data/market";
 import { OCCUPATIONS_BY_TIER, WEALTH_BY_TIER, WEALTH_TIER_WEIGHTS } from "@/data/people";
 import { inheritAppearance, presentationFor, randomAppearance } from "../appearance";
 import { rollDestinies } from "../cameos";
+import { assignGoals } from "../goals";
 import type { Content } from "../content";
 import { addLog, startLogYear } from "../log";
 import { createNpc, randomFirstName, randomGender } from "../npc";
@@ -178,7 +180,7 @@ export function newLife(content: Content, options: NewLifeOptions = {}): GameSta
     status: "alive",
     notices: [],
     actionsThisYear: {},
-    market: { prices: {}, history: {} },
+    market: { prices: Object.fromEntries(SECURITIES.map((s) => [s.symbol, s.price])), history: {} },
     timeline: [],
     rewindsLeft: options.mode === "casual" ? GAME_CONFIG.casualRewinds : 0,
   };
@@ -195,6 +197,7 @@ export function newLife(content: Content, options: NewLifeOptions = {}): GameSta
     ...options.appearance,
   };
   state.cameos.destined = rollDestinies(rng, content.friends);
+  assignGoals(state, rng, 3);
   describeBirth(state, country, family);
 
   state.rngState = rng.state;

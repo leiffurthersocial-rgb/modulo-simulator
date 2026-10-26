@@ -1,3 +1,5 @@
+import { portfolioValue } from "./market";
+import { officeSalary } from "./politics";
 import type { Country, Debt, GameState, TaxBracket } from "./types";
 
 /** Progressive income tax on a gross yearly income. */
@@ -67,7 +69,8 @@ export function runFinanceYear(state: GameState, country: Country): FinanceSumma
   const hustles = inPrison ? 0 : player.sideHustles.reduce((s, h) => s + h.income, 0);
   const rent = player.assets.filter((a) => a.kind === "house" && a.rentedOut).reduce((s, a) => s + Math.round(a.value * 0.045), 0);
   const businessProfit = player.business ? Math.max(0, player.business.lastProfit) : 0;
-  const other = hustles + rent + businessProfit + fin.pension;
+  const office = inPrison ? 0 : officeSalary(state, country);
+  const other = hustles + rent + businessProfit + fin.pension + office;
   const income = salary + other;
   // Taxes are assessed on USD-equivalent income against the country's brackets (which are in local-scaled USD terms).
   const tax = incomeTax(income, country.taxBrackets);
@@ -121,5 +124,6 @@ export function totalDebt(state: GameState): number {
 export function netWorth(state: GameState): number {
   const { finance, assets } = state.player;
   const assetValue = assets.reduce((s, a) => s + a.value, 0);
-  return Math.round(finance.cash + assetValue - totalDebt(state));
+  const business = state.player.business?.value ?? 0;
+  return Math.round(finance.cash + assetValue + business + portfolioValue(state) - totalDebt(state));
 }

@@ -15,6 +15,10 @@ import { runBusinessYear } from "../business";
 import { runCareerYear } from "../career";
 import { runFamilyYear } from "../family";
 import { runHealthYear } from "../health";
+import { goalMilestones } from "../goals";
+import { runFameYear } from "../fame";
+import { runMarketYear } from "../market";
+import { runPoliticsYear } from "../politics";
 import { runCrimeYear } from "../crime";
 import { runNpcYear, runPlayerDrift } from "./yearly";
 
@@ -71,11 +75,15 @@ export function ageUp(prev: GameState, content: Content): GameState {
   runFamilyYear(state, rng, country);
   runPlayerDrift(state, rng);
   runEducationYear(state, rng);
+  goalMilestones(state, rng);
   runCareerYear(state, rng, content, country);
   if (state.status !== "alive") {
     state.rngState = rng.state;
     return state;
   }
+  runMarketYear(state, rng);
+  runFameYear(state, rng);
+  runPoliticsYear(state, rng);
   runBusinessYear(state, rng);
   runAssetYear(state, rng);
   runFinanceYear(state, country);

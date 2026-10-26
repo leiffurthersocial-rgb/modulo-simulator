@@ -3,6 +3,12 @@
 import type { ActionView, GameState } from "@/engine";
 import { OptionPicker } from "./OptionPicker";
 import { AssetDetail } from "./AssetDetail";
+import { Blackjack } from "./games/Blackjack";
+import { Heist } from "./games/Heist";
+import { Market } from "./games/Market";
+import { Roulette } from "./games/Roulette";
+import { Slots } from "./games/Slots";
+import { Trivia } from "./games/Trivia";
 
 export interface CustomUiProps {
   state: GameState;
@@ -18,6 +24,12 @@ type CustomUi = (props: CustomUiProps) => React.ReactNode;
  */
 const REGISTRY: Record<string, CustomUi> = {
   asset: AssetDetail,
+  blackjack: Blackjack,
+  slots: Slots,
+  roulette: Roulette,
+  market: Market,
+  trivia: Trivia,
+  heist: Heist,
 };
 
 export function registerCustomUi(key: string, ui: CustomUi): void {

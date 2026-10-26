@@ -41,6 +41,8 @@ export interface ActionResult {
   tone?: Tone;
   /** Log the result in the life log as well as showing it (default true). */
   log?: boolean;
+  /** Neither log nor show a popup (trades, minigame rounds that show their own UI). */
+  quiet?: boolean;
 }
 
 /**
@@ -56,6 +58,8 @@ export interface GameAction {
   description?: TextTemplate;
   /** lucide-react icon name (PascalCase). */
   icon?: string;
+  /** Never listed in the UI, but performable (minigame and trade settlement). */
+  internal?: boolean;
   /** Hidden entirely unless true. */
   visible?: (ctx: EventContext) => boolean;
   /** Shown but disabled with this reason. */

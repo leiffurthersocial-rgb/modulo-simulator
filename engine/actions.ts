@@ -36,6 +36,7 @@ const PRISON_SECTIONS: readonly GameAction["section"][] = ["prison", "mind", "pe
 
 function shown(action: GameAction, ctx: EventContext): boolean {
   if (ctx.player.crime.prison && !PRISON_SECTIONS.includes(action.section)) return false;
+  if (!ctx.player.crime.prison && action.section === "prison") return false;
   return !action.visible || action.visible(ctx);
 }
 
@@ -56,7 +57,7 @@ export function listActions(
   const npc = typeof params.npcId === "string" ? state.npcs[params.npcId] : undefined;
   const ctx = makeContext(state, new RngClass(state.rngState), content, npc, { ...params });
   return content.actions
-    .filter((a) => a.section === section && shown(a, ctx))
+    .filter((a) => a.section === section && !a.internal && shown(a, ctx))
     .map((a) => {
       const cost = a.cost === undefined ? undefined : typeof a.cost === "function" ? a.cost(ctx) : a.cost;
       return {
@@ -101,7 +102,7 @@ export function performAction(prev: GameState, content: Content, actionId: strin
     state.actionsThisYear[key] = (state.actionsThisYear[key] ?? 0) + 1;
   }
   const result = action.run(ctx, params);
-  if (result && state.status === "alive") {
+  if (result && !result.quiet && state.status === "alive") {
     const text = renderText(result.text, ctx);
     if (result.log !== false) addLog(state, text, result.tone ?? "neutral");
     pushNotice(state, rng, { title: result.title, text, tone: result.tone ?? "neutral", npcId: ctx.npc?.id });
