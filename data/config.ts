@@ -6,7 +6,7 @@ export const GAME_CONFIG = {
   saveVersion: 1,
 
   /** Weights for how many random events fire in a year (index = count). */
-  eventsPerYear: [30, 42, 21, 7] as readonly number[],
+  eventsPerYear: [20, 44, 26, 10] as readonly number[],
   /** Babies and toddlers get quieter years. */
   eventsPerYearInfant: [60, 35, 5, 0] as readonly number[],
 

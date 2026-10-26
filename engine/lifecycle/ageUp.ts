@@ -49,9 +49,11 @@ function runEvents(state: GameState, rng: Rng, content: Content): void {
     .forAge(age)
     .filter((e) => isEligible(e, ctx))
     .map((e) => ({ value: e, weight: weightOf(e, ctx) }));
-  for (const event of rng.weightedMany(pool, count)) {
-    if (state.status !== "alive") break;
-    fireEvent(state, rng, content, event);
+  // Draw spares: an event can fail to fire (no matching person), and a spare takes its place.
+  let fired = 0;
+  for (const event of rng.weightedMany(pool, count + 4)) {
+    if (state.status !== "alive" || fired >= count) break;
+    if (fireEvent(state, rng, content, event)) fired++;
   }
 }
 
