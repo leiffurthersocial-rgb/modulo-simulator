@@ -31,9 +31,20 @@ function Splash() {
   );
 }
 
+/** Register the offline service worker in production builds. */
+function useServiceWorker() {
+  useEffect(() => {
+    if (process.env.NODE_ENV !== "production" || !("serviceWorker" in navigator)) return;
+    navigator.serviceWorker.register("/sw.js").catch(() => {
+      // Offline support is a bonus; the game works without it.
+    });
+  }, []);
+}
+
 export function GameApp() {
   const { hydrated, hydrate, screen, game } = useGame();
   useEffect(() => hydrate(), [hydrate]);
+  useServiceWorker();
   useTheme();
   if (!hydrated) return <Splash />;
   if (screen === "create") return <CreateLife />;

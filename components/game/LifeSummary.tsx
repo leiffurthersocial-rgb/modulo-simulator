@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { renderToStaticMarkup } from "react-dom/server";
 import { Avatar } from "@/components/avatar/Avatar";
 import { PrimaryButton } from "@/components/ui/Modal";
 import { Section, Sheet } from "@/components/ui/Sheet";
@@ -53,6 +52,8 @@ export function LifeSummary({ state, onClose }: { state: GameState; onClose: () 
     try {
       setSharing("Rendering…");
       const dark = document.documentElement.classList.contains("dark");
+      // Loaded on demand so the server renderer stays out of the main bundle.
+      const { renderToStaticMarkup } = await import("react-dom/server");
       const avatar = renderToStaticMarkup(<Avatar appearance={p.appearance} age={p.age} size={220} colorKey="player" />);
       const blob = await svgToPng(highlightsSvg(state, primary, money(netWorth(state)), avatar, dark));
       const file = new File([blob], `${p.firstName}-${p.lastName}-highlights.png`, { type: "image/png" });
