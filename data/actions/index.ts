@@ -8,6 +8,7 @@ import { CRIME_ACTIONS, DARK_ACTIONS, PRISON_ACTIONS } from "./crime";
 import { LOVE_ACTIONS } from "./love";
 import { MONEY_ACTIONS } from "./money";
 import { PEOPLE_ACTIONS } from "./people";
+import { SCENARIO_ACTIONS } from "./scenarios";
 import { SCHOOL_ACTIONS } from "./school";
 import { SPECIAL_ACTIONS } from "./special";
 
@@ -26,4 +27,5 @@ export const ALL_ACTIONS: readonly GameAction[] = [
   ...FAME_ACTIONS,
   ...CASINO_ACTIONS,
   ...SPECIAL_ACTIONS,
+  ...SCENARIO_ACTIONS,
 ];

@@ -1,0 +1,231 @@
+import { definePursuits } from "@/engine/actionHelpers";
+import { fx, pass } from "@/engine/events/helpers";
+import { between, minAge, out, outThen } from "./kit";
+
+/**
+ * Long-running projects. Each session moves a flag-backed counter forward; the last one rolls a finale.
+ * Everything here can be dropped for years and picked up again.
+ */
+export const PURSUITS = definePursuits([
+  {
+    id: "novel",
+    section: "special",
+    label: "Write a novel",
+    description: "Sit down and actually do it",
+    icon: "BookOpen",
+    steps: 6,
+    visible: minAge(16),
+    progress: [
+      out(3, "You wrote another chapter and deleted two.", "neutral", fx.skill("creativity", 1), fx.happy(1)),
+      out(2, "A good writing week. The words just came.", "good", fx.skill("creativity", 2), fx.happy(3)),
+      out(1, "Writer's block. You reorganised your bookshelf instead.", "neutral", fx.happy(-1)),
+    ],
+    finale: [
+      outThen(2, "You typed 'The End'. Agents are replying to your queries.", "major", "pursuit-novel-published", fx.skill("creativity", 3), fx.happy(10)),
+      out(3, "It's finished. It's good. It lives in a drawer, for now.", "major", fx.skill("creativity", 3), fx.happy(8), fx.smarts(1)),
+      out(1, "You finished the draft and burned the manuscript in a dramatic ceremony. Then you cried.", "neutral", fx.happy(-2), fx.skill("creativity", 1)),
+    ],
+  },
+  {
+    id: "album",
+    section: "special",
+    label: "Record an album",
+    icon: "Music",
+    steps: 6,
+    cost: 400,
+    visible: minAge(14),
+    progress: [
+      out(3, "Another session in a borrowed studio. You laid down drums and a bass line.", "neutral", fx.skill("creativity", 1), fx.happy(2)),
+      out(1, "Your best track yet came out of a mistake.", "good", fx.skill("creativity", 2), fx.happy(4)),
+      out(1, "A fight with your bandmate nearly ended the project.", "bad", fx.happy(-3), fx.skill("charisma", 1)),
+    ],
+    finale: [
+      outThen(1, "The album got picked up by a small label and a blogger loved it.", "major", "pursuit-album-hit", fx.skill("creativity", 3), fx.fame(3), fx.happy(10)),
+      out(3, "You released it online. Seventeen people streamed it. You are very proud.", "good", fx.happy(7), fx.skill("creativity", 3)),
+      out(2, "It's a bit rough, but it's yours.", "neutral", fx.happy(4), fx.skill("creativity", 2)),
+    ],
+  },
+  {
+    id: "marathon",
+    section: "activities",
+    label: "Train for a marathon",
+    icon: "Zap",
+    steps: 4,
+    visible: between(15, 70),
+    progress: [
+      out(3, "Long runs at dawn. Your legs are getting stronger.", "good", fx.skill("athleticism", 2), fx.health(2)),
+      out(2, "You hit the wall at 30 km but finished the training run.", "neutral", fx.skill("athleticism", 1), fx.health(1)),
+      out(1, "Shin splints. Two weeks of rest.", "bad", fx.health(-3)),
+    ],
+    finale: [
+      { weight: pass("athleticism", 40), text: "You crossed the finish line to a crowd chanting your name. You cried.", tone: "major", effects: [fx.health(5), fx.skill("athleticism", 3), fx.happy(10), fx.achieve("marathoner")] },
+      out(2, "You finished, hobbling, in 5 hours. You can officially say 'I ran a marathon'.", "good", fx.health(2), fx.happy(7), fx.achieve("marathoner")),
+      out(1, "You dropped out at mile 20 with cramps. Next year.", "neutral", fx.health(-2), fx.happy(-2)),
+    ],
+  },
+  {
+    id: "restore-car",
+    section: "special",
+    label: "Restore a classic car",
+    icon: "Car",
+    steps: 5,
+    cost: 900,
+    visible: minAge(18),
+    progress: [
+      out(3, "You rebuilt the carburetor. It's slightly less broken.", "neutral", fx.skill("streetSmarts", 1), fx.happy(2)),
+      out(1, "A rare part arrived from Portugal. It fit.", "good", fx.happy(3), fx.skill("streetSmarts", 1)),
+      out(1, "You discovered rust in places you didn't know cars had.", "bad", fx.happy(-2), fx.cash(-400)),
+    ],
+    finale: [
+      out(3, "The engine roared. It's gorgeous. It's a rolling piece of history.", "major", fx.happy(10), fx.cash(8000), fx.skill("streetSmarts", 2)),
+      out(1, "You entered it at a concours and won a trophy.", "major", fx.happy(12), fx.fame(1), fx.cash(5000)),
+      out(1, "It runs, but only on Sundays. You adore it anyway.", "good", fx.happy(6)),
+    ],
+  },
+  {
+    id: "language",
+    section: "mind",
+    label: "Learn a language",
+    icon: "BookOpen",
+    steps: 5,
+    visible: minAge(12),
+    progress: [
+      out(3, "You studied vocabulary on the train. 'Cheese' is now second nature.", "neutral", fx.smarts(1), fx.happy(1)),
+      out(1, "You had a whole conversation with a barista in the new language.", "good", fx.smarts(1), fx.happy(4), fx.skill("charisma", 1)),
+      out(1, "You said something unfortunate to a waiter. He's still laughing.", "neutral", fx.happy(1)),
+    ],
+    finale: [
+      out(4, "You are fluent. Doors open that you didn't know existed.", "major", fx.smarts(3), fx.skill("charisma", 2), fx.happy(7)),
+      out(1, "A native speaker said you had 'no accent'. You cried quietly on the bus.", "major", fx.smarts(3), fx.happy(10)),
+    ],
+    repeatable: true,
+  },
+  {
+    id: "instrument",
+    section: "mind",
+    label: "Master an instrument",
+    icon: "Music",
+    steps: 6,
+    cost: 200,
+    visible: minAge(8),
+    progress: [
+      out(3, "Daily scales. Your neighbours are saints.", "neutral", fx.skill("creativity", 1), fx.happy(1)),
+      out(1, "A breakthrough. You played a whole song without stopping.", "good", fx.skill("creativity", 2), fx.happy(4)),
+      out(1, "You almost quit. Then you didn't.", "neutral", fx.happy(-1), fx.skill("creativity", 1)),
+    ],
+    finale: [
+      out(3, "A full recital. Your family cried. Your teacher cried harder.", "major", fx.skill("creativity", 4), fx.happy(10)),
+      outThen(1, "A talent scout in the audience asked for your card.", "major", "pursuit-instrument-scout", fx.skill("creativity", 4), fx.happy(10)),
+    ],
+    repeatable: true,
+  },
+  {
+    id: "startup-idea",
+    section: "money",
+    label: "Build a side project",
+    description: "An app, a product, a hustle",
+    icon: "Rocket",
+    steps: 5,
+    visible: minAge(16),
+    progress: [
+      out(3, "Late nights, cold pizza and a surprisingly working prototype.", "neutral", fx.smarts(1), fx.skill("creativity", 1), fx.happy(1)),
+      out(1, "You got your first user. It was your mum.", "good", fx.happy(3)),
+      out(1, "A competitor launched the same thing. You pivoted.", "bad", fx.happy(-2), fx.smarts(1)),
+    ],
+    finale: [
+      outThen(1, "It took off. Investors started calling.", "major", "pursuit-sideproject-offer", fx.happy(10), fx.fame(1)),
+      out(2, "It earns a steady trickle of cash every month. Not life-changing, but yours.", "good", fx.cash(6000), fx.happy(6)),
+      out(2, "Nobody cared. You learned an enormous amount.", "neutral", fx.smarts(2), fx.happy(-1)),
+    ],
+    repeatable: true,
+  },
+  {
+    id: "degree-online",
+    section: "mind",
+    label: "Teach yourself a skill",
+    description: "Courses, books, YouTube rabbit holes",
+    icon: "GraduationCap",
+    steps: 4,
+    visible: minAge(14),
+    progress: [
+      out(3, "A few hours a week. The knowledge slowly clicks.", "neutral", fx.smarts(1), fx.happy(1)),
+      out(1, "Everything made sense all at once.", "good", fx.smarts(2), fx.happy(3)),
+    ],
+    finale: [out(1, "You earned a certificate and, more importantly, the knowledge.", "good", fx.smarts(3), fx.happy(5), fx.skill("streetSmarts", 1))],
+    repeatable: true,
+  },
+  {
+    id: "garden-allotment",
+    section: "activities",
+    label: "Grow a prize garden",
+    icon: "Leaf",
+    steps: 3,
+    visible: minAge(18),
+    progress: [
+      out(3, "You dug beds, planted seeds and prayed for rain.", "neutral", fx.health(1), fx.happy(2)),
+      out(1, "Slugs. Again.", "bad", fx.happy(-1)),
+    ],
+    finale: [
+      out(3, "Your tomatoes took second place at the county fair. First place was suspicious.", "good", fx.happy(7), fx.skill("creativity", 1)),
+      out(1, "Best in show. A tiny rosette hangs proudly on your fridge.", "major", fx.happy(9), fx.fame(1)),
+    ],
+    repeatable: true,
+  },
+  {
+    id: "film",
+    section: "fame",
+    label: "Make a short film",
+    icon: "Film",
+    steps: 5,
+    cost: 600,
+    visible: minAge(14),
+    progress: [
+      out(3, "You wrote the script, argued over the lens and shot a scene.", "neutral", fx.skill("creativity", 2), fx.happy(2)),
+      out(1, "The lead actor quit. You played the part yourself.", "neutral", fx.skill("charisma", 1), fx.happy(1)),
+      out(1, "A day's footage was corrupted. You wept openly.", "bad", fx.happy(-3)),
+    ],
+    finale: [
+      outThen(1, "A festival accepted your film.", "major", "pursuit-film-festival", fx.happy(10), fx.skill("creativity", 3), fx.fame(2)),
+      out(3, "You screened it for friends. They clapped for a full minute.", "good", fx.happy(7), fx.skill("creativity", 3)),
+      out(1, "It got six views, five from your family. You're still proud.", "neutral", fx.happy(3)),
+    ],
+    repeatable: true,
+  },
+  {
+    id: "fitness-transform",
+    section: "health",
+    label: "Total body transformation",
+    icon: "Dumbbell",
+    steps: 5,
+    visible: minAge(16),
+    progress: [
+      out(3, "Meal prep, early mornings and a lot of protein.", "good", fx.health(2), fx.looks(1), fx.skill("athleticism", 1)),
+      out(1, "You had a cheat day that lasted a week.", "neutral", fx.happy(2)),
+      out(1, "You pulled a muscle and had to rest.", "bad", fx.health(-2)),
+    ],
+    finale: [
+      out(4, "You look in the mirror and barely recognise the person staring back.", "major", fx.health(5), fx.looks(5), fx.skill("athleticism", 3), fx.happy(8)),
+      out(1, "You hit your goal weight and immediately ordered pizza.", "good", fx.health(3), fx.looks(3), fx.happy(5)),
+    ],
+    repeatable: true,
+  },
+  {
+    id: "podcast",
+    section: "fame",
+    label: "Start a podcast",
+    icon: "Mic",
+    steps: 4,
+    cost: 150,
+    visible: minAge(14),
+    progress: [
+      out(3, "Another episode in the can. Twelve people listened.", "neutral", fx.skill("charisma", 1), fx.happy(1)),
+      out(1, "A guest was hilarious. That episode did really well.", "good", fx.skill("charisma", 2), fx.happy(3)),
+    ],
+    finale: [
+      out(1, "A big podcast network offered you a deal.", "major", fx.fame(3), fx.cash(8000), fx.happy(8)),
+      out(3, "You hit episode 50. A few hundred loyal listeners send fan mail.", "good", fx.skill("charisma", 3), fx.fame(1), fx.happy(5)),
+      out(1, "You ran out of things to say and quit with dignity.", "neutral", fx.happy(0)),
+    ],
+    repeatable: true,
+  },
+]);

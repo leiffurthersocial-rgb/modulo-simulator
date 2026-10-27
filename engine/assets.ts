@@ -146,3 +146,24 @@ export function runAssetYear(state: GameState, rng: Rng): void {
     asset.value = Math.max(0, Math.round(asset.value * (1 + change)));
   }
 }
+
+/** A pet that simply turns up in your life (a stray, a rescue, a gift). Returns it, or undefined for an unknown species. */
+export function giftPet(state: GameState, rng: Rng, country: Country, catalogId: string): Asset | undefined {
+  const item = CATALOG_BY_ID[catalogId];
+  if (!item || item.kind !== "pet") return undefined;
+  const asset: Asset = {
+    id: rng.id("a_"),
+    kind: "pet",
+    name: `${rng.pick(PET_NAMES)} the ${item.name}`,
+    value: 0,
+    purchasePrice: 0,
+    boughtAtAge: state.player.age,
+    condition: 100,
+    yearlyUpkeep: Math.round((PET_UPKEEP[item.id] ?? 500) * country.costIndex),
+    rentedOut: false,
+    catalogId: item.id,
+    age: rng.int(0, 3),
+  };
+  state.player.assets.push(asset);
+  return asset;
+}

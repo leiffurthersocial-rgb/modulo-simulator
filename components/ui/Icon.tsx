@@ -5,6 +5,10 @@ import {
   PawPrint, PenTool, Pill, Plane, Rocket, Scissors, Settings, Shield, Ship, ShoppingBag, Shuffle, Siren, Skull, Smile,
   Sparkles, Star, Stethoscope, Sun, Swords, Syringe, Tent, ThumbsDown, ThumbsUp, Trash2, TrendingUp, Trophy, Undo2,
   Upload, User, Users, Utensils, Wine, X, Zap, Bike, Flower2, Hammer, Laptop, Scale, Church, Target, Tv, Bomb,
+  HeartHandshake, Handshake, Compass, Code, Server, Cpu, Bot, Map, Globe, Languages, Telescope, FlaskConical, Mountain,
+  Cloud, Fish, Calculator, FileCheck, FileText, Truck, PartyPopper, Waves, Anchor, Key, Pickaxe, Fuel, Wind, Construction,
+  Scan, Apple, Paintbrush, Video, Radio, Clapperboard, Pen, Shirt, Gamepad2, Flag, Wand, School, Tag, Thermometer,
+  UserCheck, MessageSquare, Phone,
   type LucideIcon,
 } from "lucide-react";
 
@@ -16,6 +20,10 @@ const ICONS: Record<string, LucideIcon> = {
   PawPrint, PenTool, Pill, Plane, Rocket, Scissors, Settings, Shield, Ship, ShoppingBag, Shuffle, Siren, Skull, Smile,
   Sparkles, Star, Stethoscope, Sun, Swords, Syringe, Tent, ThumbsDown, ThumbsUp, Trash2, TrendingUp, Trophy, Undo2,
   Upload, User, Users, Utensils, Wine, X, Zap, Bike, Flower2, Hammer, Laptop, Scale, Church, Target, Tv, Bomb,
+  HeartHandshake, Handshake, Compass, Code, Server, Cpu, Bot, Map, Globe, Languages, Telescope, FlaskConical, Mountain,
+  Cloud, Fish, Calculator, FileCheck, FileText, Truck, PartyPopper, Waves, Anchor, Key, Pickaxe, Fuel, Wind, Construction,
+  Scan, Apple, Paintbrush, Video, Radio, Clapperboard, Pen, Shirt, Gamepad2, Flag, Wand, School, Tag, Thermometer,
+  UserCheck, MessageSquare, Phone,
 };
 
 export const ICON_NAMES = Object.keys(ICONS);
