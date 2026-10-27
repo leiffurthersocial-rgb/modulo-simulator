@@ -34,6 +34,43 @@
   --major: #a99bff;
 }
 
+/* Row icon palette: neighbouring rows cycle through these hues so lists don't blur together. */
+:root {
+  --hue-1: #6d4aff;
+  --hue-2: #e11d48;
+  --hue-3: #d97706;
+  --hue-4: #059669;
+  --hue-5: #0284c7;
+  --hue-6: #db2777;
+  --hue-7: #ea580c;
+  --hue-8: #0d9488;
+}
+
+.dark {
+  --hue-1: #a99bff;
+  --hue-2: #fb7185;
+  --hue-3: #fbbf24;
+  --hue-4: #34d399;
+  --hue-5: #38bdf8;
+  --hue-6: #f472b6;
+  --hue-7: #fb923c;
+  --hue-8: #2dd4bf;
+}
+
+.tint-chip {
+  --tint: var(--hue-1);
+  background: color-mix(in srgb, var(--tint) 16%, transparent);
+  color: var(--tint);
+}
+.tint-row:nth-child(8n + 2) .tint-chip { --tint: var(--hue-2); }
+.tint-row:nth-child(8n + 3) .tint-chip { --tint: var(--hue-3); }
+.tint-row:nth-child(8n + 4) .tint-chip { --tint: var(--hue-4); }
+.tint-row:nth-child(8n + 5) .tint-chip { --tint: var(--hue-5); }
+.tint-row:nth-child(8n + 6) .tint-chip { --tint: var(--hue-6); }
+.tint-row:nth-child(8n + 7) .tint-chip { --tint: var(--hue-7); }
+.tint-row:nth-child(8n + 8) .tint-chip { --tint: var(--hue-8); }
+.tint-row:not(:disabled):hover { background: color-mix(in srgb, var(--tint-row, var(--hue-1)) 6%, var(--card)); }
+
 @theme inline {
   --color-bg: var(--bg);
   --color-fg: var(--fg);

@@ -44,8 +44,8 @@ export function ActivitiesPanel({ state, onClose, onCustom }: { state: GameState
       ) : (
         <div className="grid grid-cols-2 gap-2">
           {available.map((s) => (
-            <button key={s.section} onClick={() => setOpen(s.section)} className="flex flex-col items-start gap-1 rounded-2xl bg-card p-3 text-left shadow-sm transition hover:bg-card-2 active:scale-[0.98]">
-              <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-accent/12 text-accent">
+            <button key={s.section} onClick={() => setOpen(s.section)} className="tint-row flex flex-col items-start gap-1 rounded-2xl bg-card p-3 text-left shadow-sm transition active:scale-[0.98]">
+              <span className="tint-chip flex h-9 w-9 items-center justify-center rounded-xl">
                 <Icon name={s.icon} size={20} />
               </span>
               <span className="font-extrabold">{s.title}</span>

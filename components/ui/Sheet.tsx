@@ -1,15 +1,18 @@
 "use client";
 
 import { ChevronLeft } from "lucide-react";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 /** Full-height panel over the game column, with a back button. */
 export function Sheet({ title, onClose, children, actions }: { title: string; onClose: () => void; children: React.ReactNode; actions?: React.ReactNode }) {
+  // Keep the latest onClose in a ref so inline callbacks don't re-register the listener on every render.
+  const closeRef = useRef(onClose);
+  closeRef.current = onClose;
   useEffect(() => {
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && closeRef.current();
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [onClose]);
+  }, []);
   return (
     <div className="fixed inset-0 z-30 flex justify-center bg-black/30 anim-fade" role="dialog" aria-modal="true" aria-label={title}>
       <div className="anim-sheet flex h-full w-full max-w-[440px] flex-col bg-bg">
@@ -53,7 +56,7 @@ export function Row({
 }) {
   const content = (
     <>
-      {icon && <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-card-2 text-accent">{icon}</span>}
+      {icon && <span className="tint-chip flex h-9 w-9 shrink-0 items-center justify-center rounded-xl">{icon}</span>}
       <span className="min-w-0 flex-1 text-left">
         <span className="block truncate font-semibold">{title}</span>
         {subtitle && <span className="block text-sm text-muted">{subtitle}</span>}
@@ -61,9 +64,9 @@ export function Row({
       {right && <span className="shrink-0 text-sm text-muted">{right}</span>}
     </>
   );
-  const cls = "flex w-full items-center gap-3 border-b border-line px-3 py-2.5 last:border-b-0";
+  const cls = "tint-row flex w-full items-center gap-3 border-b border-line px-3 py-2.5 last:border-b-0";
   return onClick ? (
-    <button onClick={onClick} disabled={disabled} className={`${cls} hover:bg-card-2 disabled:opacity-45 disabled:hover:bg-transparent`}>
+    <button onClick={onClick} disabled={disabled} className={`${cls} disabled:opacity-45`}>
       {content}
     </button>
   ) : (
