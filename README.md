@@ -10,10 +10,11 @@ Built with Next.js (App Router), TypeScript (strict), Tailwind CSS 4, Zustand an
 
 | | |
 | --- | --- |
-| Events | 400+, from toddler tantrums to world events, many with 2–4 choices, multi-step chains and callbacks years later |
-| Careers | 88, with rank ladders, requirements, promotions, firing, layoffs, hazards and pensions |
+| Events | 500+, from toddler tantrums to world events, many with 2–4 choices, multi-step chains and callbacks years later |
+| Actions | 235, including 67 "choose your approach" scenarios (200+ approaches, each with its own odds and consequences) and 12 multi-year pursuits |
+| Careers | 176, with rank ladders, requirements, promotions, firing, layoffs, hazards and pensions, plus 25 side hustles |
 | Countries | 26, each with name pools, currency, salaries, cost of living, tax brackets and life expectancy |
-| Achievements | 138 (some secret), plus end-of-life ribbons |
+| Achievements | 181 (some secret), plus end-of-life ribbons |
 | Systems | School and higher education, money and taxes, homes/cars/boats/pets with mortgages, relationships, marriage and kids, health and addictions, crime/trials/prison, fame and social media, politics, casino minigames, stocks and crypto, life goals, a lifelong rival, the mob, a cult, a secret agency, legacy mode, "What if?" rewinds (casual mode) |
 | Extras | Procedural SVG avatars, dark mode, shareable highlights image, 3 save slots, JSON export/import, PWA |
 
@@ -135,6 +136,28 @@ export const MY_EVENTS = defineEvents("random", [
 
 Actions live in `data/actions/*.ts`, registered in `data/actions/index.ts`. Each has a `section` (where it appears), an optional `group`, `visible`, `blocked` (returns a reason), `perYear` / `perYearPerPerson`, an optional `options(ctx)` picker, and `run(ctx, params)` returning a result text. People interactions use `section: "people"` and get `ctx.npc`.
 
+**Scenarios: different approaches, different consequences.** Most of the "things to do" are built with `defineScenarios` (`data/actions/scenarios/*.ts`). The player picks *how* to tackle something, and each approach has its own cost and its own weighted outcomes. Outcomes can be skill-gated (`pass` / `fail`), change relationships or job performance, or chain into a follow-up event:
+
+```ts
+{
+  id: "sc-night-out",
+  section: "nightlife",
+  label: "A night out",
+  approaches: [
+    { id: "quiet", label: "Quiet drinks", cost: 60, outcomes: [out(5, "A calm night.", "good", fx.happy([2, 5]))] },
+    { id: "club", label: "Hit the club", cost: 150, outcomes: [
+      out(4, "You danced until your feet gave out.", "good", fx.happy([4, 8])),
+      out(2, "Someone spilled a drink on your phone.", "bad", fx.happy(-3), fx.cash(-300)),
+      outThen(1, "A stranger locked eyes with you.", "good", "night-stranger-chat"),
+    ] },
+  ],
+}
+```
+
+**Pursuits.** `definePursuits` (`data/actions/scenarios/pursuits.ts`) makes multi-year projects: write a novel, record an album, train for a marathon, restore a car. Each session advances a counter stored in a life flag, then the last session rolls a finale (which can itself trigger an event). Progress survives saves and can be dropped and picked up years later.
+
+**Career-specific decisions** live in `data/actions/scenarios/work.ts` (they only show up if your job fits) and `data/events/jobs.ts` (random career events with real downsides on the table).
+
 ### Careers
 
 Careers live in `data/careers/*.ts`. Use the `career(...)` helper:
@@ -186,8 +209,8 @@ How it works:
 
 `npm run simulate` plays 1000 lives with an autopilot that studies, works, dates, buys a home and sees a doctor. Latest results (US-baseline dollars):
 
-- **Lifespan:** mean 75.8, median 79, 90th percentile 91
-- **Net worth at death:** median ~$200k, 90th percentile ~$1.5M, ~16% millionaires
+- **Lifespan:** mean 76.0, median 80, 90th percentile 91
+- **Net worth at death:** median ~$260k, 90th percentile ~$1.6M, ~19% millionaires
 - **Life outcomes:** ~85% have children, ~70% marry
 - **Friend cameos:** ~0.33 per life
 
@@ -206,7 +229,7 @@ A passive player who only presses Age also lands near real-world lifespans. The 
 ## Quality bar
 
 - **Types:** strict TypeScript with no `any`.
-- **Tests:** 116 Vitest tests covering the RNG, the age-up loop, event filtering and templates, finance math, debt and foreclosure, careers, education, family, crime, minigames, market, politics, achievements, legacy, saves, the friend cameo rate, and population lifespans.
+- **Tests:** 125 Vitest tests covering the RNG, the age-up loop, event filtering and templates, finance math, debt and foreclosure, careers, education, family, crime, minigames, market, politics, achievements, legacy, saves, the friend cameo rate, population lifespans, and every scenario approach and pursuit (no crashes, no leaked placeholders, no dangling event references, no duplicate labels).
 - **Checks:** `npm run lint` and `npm run build` pass clean.
 
 Modulo Simulator is an original work. It replicates the general mechanics of the life-sim genre, not any other game's assets, names or writing.

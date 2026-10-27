@@ -33,6 +33,16 @@ describe("scenario content", () => {
     expect(new Set(ids).size).toBe(ids.length);
   });
 
+  it("never shows two actions with the same label in one section", () => {
+    const seen = new Map<string, string>();
+    for (const a of content.actions) {
+      if (typeof a.label !== "string" || a.internal) continue;
+      const key = `${a.section}:${a.label.toLowerCase()}`;
+      expect(seen.get(key), `"${a.label}" in ${a.section} is used by ${seen.get(key)} and ${a.id}`).toBeUndefined();
+      seen.set(key, a.id);
+    }
+  });
+
   it("only chains into events that exist", () => {
     const outcomes = (list: readonly Outcome[]) => list.map((o) => o.next).filter((n): n is string => !!n);
     const nexts = [

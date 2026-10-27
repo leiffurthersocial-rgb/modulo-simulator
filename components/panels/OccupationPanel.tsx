@@ -106,7 +106,7 @@ export function OccupationPanel({ state, onClose, onCustom }: { state: GameState
       {(["school", "career"] as const).flatMap((section) =>
         groupsOf(state, section).map((g) => (
           <Section key={section + g} title={g || (section === "school" ? "School" : "Work")}>
-            <ActionList state={state} section={section} group={g === "" ? undefined : g} onCustom={onCustom} />
+            <ActionList state={state} section={section} group={g} onCustom={onCustom} />
           </Section>
         )),
       )}

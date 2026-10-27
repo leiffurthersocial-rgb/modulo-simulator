@@ -30,7 +30,7 @@ export function ActivitiesPanel({ state, onClose, onCustom }: { state: GameState
       <Sheet title={meta.title} onClose={() => setOpen(null)}>
         {groupsOf(state, open).map((g) => (
           <Section key={g} title={g || undefined}>
-            <ActionList state={state} section={open} group={g === "" ? undefined : g} onCustom={onCustom} />
+            <ActionList state={state} section={open} group={g} onCustom={onCustom} />
           </Section>
         ))}
       </Sheet>

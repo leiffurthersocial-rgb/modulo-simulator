@@ -15,6 +15,15 @@ export const LEISURE_SCENARIOS = defineScenarios([
     visible: minAge(18),
     approaches: [
       {
+        id: "park",
+        label: "Hang out in the park (free)",
+        outcomes: [
+          out(4, "A bench, a bag of crisps and a long chat as the sun went down. Cheap and lovely.", "good", fx.happy([1, 4])),
+          out(2, "It started to rain. You and your friends sheltered under a bridge and laughed about it.", "neutral", fx.happy(2)),
+          out(1, "A passing busker jammed with your friends. Spontaneous magic.", "good", fx.happy([3, 6]), fx.skill("charisma", 1)),
+        ],
+      },
+      {
         id: "quiet",
         label: "Quiet drinks with friends",
         cost: 60,
@@ -262,7 +271,7 @@ export const LEISURE_SCENARIOS = defineScenarios([
     id: "sc-volunteer",
     section: "activities",
     group: "Giving back",
-    label: "Volunteer",
+    label: "Give your time to a cause",
     icon: "HeartHandshake",
     visible: minAge(12),
     approaches: [

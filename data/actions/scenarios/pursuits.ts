@@ -85,7 +85,7 @@ export const PURSUITS = definePursuits([
   {
     id: "language",
     section: "mind",
-    label: "Learn a language",
+    label: "Become fluent in a language",
     icon: "BookOpen",
     steps: 5,
     visible: minAge(12),

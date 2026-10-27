@@ -25,7 +25,8 @@ export function ActionList({
 }) {
   const act = useGame((s) => s.act);
   const money = useMoney(state);
-  const views = listActions(state, DEFAULT_CONTENT, section, params).filter((v) => group === undefined || v.action.group === group);
+  // `group === ""` means "only the actions with no group"; `undefined` means every action in the section.
+  const views = listActions(state, DEFAULT_CONTENT, section, params).filter((v) => group === undefined || (v.action.group ?? "") === group);
   if (views.length === 0) return empty ? <p className="px-3 py-4 text-sm text-muted">{empty}</p> : null;
   return (
     <>

@@ -58,6 +58,23 @@ const SIDE_HUSTLES = [
   { id: "crafts", label: "Handmade crafts shop", income: 3_500, creativity: 45 },
   { id: "delivery-app", label: "Food delivery app", income: 7_500 },
   { id: "photography-gigs", label: "Event photography", income: 6_000, creativity: 50 },
+  { id: "dropshipping", label: "Dropshipping store", income: 6_000 },
+  { id: "print-on-demand", label: "Print-on-demand designs", income: 4_500, creativity: 40 },
+  { id: "freelance-writing", label: "Freelance writing", income: 8_000, smarts: 55 },
+  { id: "freelance-web", label: "Freelance web work", income: 11_000, smarts: 65 },
+  { id: "music-lessons", label: "Music lessons", income: 6_500, creativity: 55 },
+  { id: "house-cleaning", label: "House cleaning", income: 8_000 },
+  { id: "lawn-care", label: "Lawn care round", income: 6_500 },
+  { id: "handyman", label: "Handyman jobs", income: 10_000 },
+  { id: "translation", label: "Freelance translation", income: 9_000, smarts: 70 },
+  { id: "mobile-dj", label: "Mobile DJ", income: 7_000, creativity: 45 },
+  { id: "catering", label: "Small-scale catering", income: 9_500, creativity: 45 },
+  { id: "baking-orders", label: "Custom baking orders", income: 5_000, creativity: 40 },
+  { id: "dog-training", label: "Dog training", income: 7_500 },
+  { id: "vintage-store", label: "Vintage online store", income: 6_500 },
+  { id: "stock-photos", label: "Stock photography", income: 3_000, creativity: 45 },
+  { id: "game-coaching", label: "Game coaching", income: 5_500, smarts: 55 },
+  { id: "moving-help", label: "Moving help", income: 5_500 },
 ] as const;
 
 export const CAREER_ACTIONS = defineActions("career", [
@@ -191,7 +208,7 @@ export const CAREER_ACTIONS = defineActions("career", [
     label: "Start a side hustle",
     icon: "Rocket",
     perYear: 1,
-    visible: (ctx) => ctx.player.age >= 16 && ctx.player.sideHustles.length < 2 && !ctx.player.crime.prison,
+    visible: (ctx) => ctx.player.age >= 16 && ctx.player.sideHustles.length < 3 && !ctx.player.crime.prison,
     options: (ctx) =>
       SIDE_HUSTLES.filter((h) => !ctx.player.sideHustles.some((x) => x.id === h.id)).map((h) => ({
         id: h.id,

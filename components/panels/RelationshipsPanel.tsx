@@ -44,7 +44,7 @@ export function PersonPanel({ state, npc, onClose, onCustom }: { state: GameStat
       {npc.alive ? (
         groupsOf(state, "people", params).map((g) => (
           <Section key={g} title={g || "Interact"}>
-            <ActionList state={state} section="people" params={params} group={g === "" ? undefined : g} onCustom={onCustom} />
+            <ActionList state={state} section="people" params={params} group={g} onCustom={onCustom} />
           </Section>
         ))
       ) : (

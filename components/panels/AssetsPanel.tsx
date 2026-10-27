@@ -63,7 +63,7 @@ export function AssetsPanel({ state, onClose, onCustom }: { state: GameState; on
       {(["assets", "money"] as const).flatMap((section) =>
         groupsOf(state, section).map((g) => (
           <Section key={section + g} title={g || "Shop"}>
-            <ActionList state={state} section={section} group={g === "" ? undefined : g} onCustom={onCustom} />
+            <ActionList state={state} section={section} group={g} onCustom={onCustom} />
           </Section>
         )),
       )}
