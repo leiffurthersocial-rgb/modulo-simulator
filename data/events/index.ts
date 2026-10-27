@@ -16,7 +16,10 @@ import { SPECIAL_EVENTS } from "./special";
 import { WILD_EVENTS } from "./wild";
 import { EVERYDAY_EVENTS, KID_EXTRA_EVENTS } from "./everyday";
 import { CAMEO_EVENTS } from "./cameo";
+import { CHAIN_EVENTS } from "./chains";
+import { JOB_EVENTS } from "./jobs";
+import { LIFE_MORE_EVENTS } from "./lifeMore";
 import { FOLLOWUP_EVENTS } from "./followups";
 
 /** Every event in the game. Add new event files here. */
-export const ALL_EVENTS: readonly GameEvent[] = [...BABY_EVENTS, ...CHILDHOOD_EVENTS, ...SCHOOL_EVENTS, ...TEEN_EVENTS, ...COLLEGE_EVENTS, ...YOUNG_ADULT_EVENTS, ...WORK_EVENTS, ...MONEY_EVENTS, ...ROMANCE_EVENTS, ...FAMILY_EVENTS, ...CRIME_EVENTS, ...PRISON_EVENTS, ...HEALTH_EVENTS, ...FAME_EVENTS, ...SPECIAL_EVENTS, ...WILD_EVENTS, ...EVERYDAY_EVENTS, ...KID_EXTRA_EVENTS, ...CAMEO_EVENTS, ...FOLLOWUP_EVENTS];
+export const ALL_EVENTS: readonly GameEvent[] = [...BABY_EVENTS, ...CHILDHOOD_EVENTS, ...SCHOOL_EVENTS, ...TEEN_EVENTS, ...COLLEGE_EVENTS, ...YOUNG_ADULT_EVENTS, ...WORK_EVENTS, ...MONEY_EVENTS, ...ROMANCE_EVENTS, ...FAMILY_EVENTS, ...CRIME_EVENTS, ...PRISON_EVENTS, ...HEALTH_EVENTS, ...FAME_EVENTS, ...SPECIAL_EVENTS, ...WILD_EVENTS, ...EVERYDAY_EVENTS, ...KID_EXTRA_EVENTS, ...CAMEO_EVENTS, ...FOLLOWUP_EVENTS, ...CHAIN_EVENTS, ...JOB_EVENTS, ...LIFE_MORE_EVENTS];

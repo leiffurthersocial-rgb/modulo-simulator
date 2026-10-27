@@ -1,7 +1,7 @@
 import { defineScenarios } from "@/engine/actionHelpers";
 import { fail, fx, pass } from "@/engine/events/helpers";
 import type { EventContext } from "@/engine/types";
-import { bonus, employedIn, inCategory, out, outThen, payChange, perf, sacked } from "./kit";
+import { bonus, employedIn, inCategory, out, payChange, perf, sacked } from "./kit";
 
 const anyJob = (ctx: EventContext) => !!ctx.player.career.job && !ctx.player.crime.prison;
 const fullTime = (ctx: EventContext) => anyJob(ctx) && !ctx.player.career.job!.partTime;

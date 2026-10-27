@@ -4,10 +4,6 @@ import type { EventContext, NpcRole } from "@/engine/types";
 import { out, outThen } from "./kit";
 
 const alive = (ctx: EventContext) => !!ctx.npc?.alive && ctx.npc.inContact;
-const role =
-  (...roles: NpcRole[]) =>
-  (ctx: EventContext) =>
-    alive(ctx) && roles.includes(ctx.npc!.role) && ctx.player.age >= 8;
 const ROMANTIC: NpcRole[] = ["partner", "fiance", "spouse"];
 const FRIENDLY: NpcRole[] = ["friend", "bestFriend", "classmate", "coworker", "neighbor", "roommate", "collegeRoommate", "gymBuddy", "bandmate", "teammate"];
 const FAMILY: NpcRole[] = ["mother", "father", "sibling", "grandparent", "stepparent", "child"];
