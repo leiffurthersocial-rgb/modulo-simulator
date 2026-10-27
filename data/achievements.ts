@@ -1,5 +1,6 @@
 import { netWorth } from "@/engine/finance";
 import type { GameState } from "@/engine/types";
+import { MORE_ACHIEVEMENTS } from "./achievementsMore";
 
 export interface AchievementDef {
   id: string;
@@ -17,7 +18,7 @@ const people = (s: GameState, role: string) => Object.values(s.npcs).filter((x) 
 const degree = (s: GameState, level: string) => s.player.education.degrees.some((d) => d.level === level);
 const a = (id: string, name: string, description: string, icon: string, check?: AchievementDef["check"], secret = false): AchievementDef => ({ id, name, description, icon, check, secret });
 
-export const ACHIEVEMENTS: readonly AchievementDef[] = [
+const BASE_ACHIEVEMENTS: readonly AchievementDef[] = [
   // ------------------------------------------------------------ life & age
   a("first-birthday", "Happy Birthday", "Turn 1.", "Sparkles", (s) => s.player.age >= 1),
   a("teenager", "Teenage Dirtbag", "Turn 13.", "Smile", (s) => s.player.age >= 13),
@@ -167,5 +168,7 @@ export const ACHIEVEMENTS: readonly AchievementDef[] = [
   a("legacy", "Family Legacy", "Continue a life as your child.", "Users", (s) => s.generation >= 2),
   a("dynasty", "Dynasty", "Reach the fifth generation.", "Crown", (s) => s.generation >= 5, true),
 ];
+
+export const ACHIEVEMENTS: readonly AchievementDef[] = [...BASE_ACHIEVEMENTS, ...MORE_ACHIEVEMENTS];
 
 export const ACHIEVEMENT_BY_ID: Readonly<Record<string, AchievementDef>> = Object.fromEntries(ACHIEVEMENTS.map((x) => [x.id, x]));

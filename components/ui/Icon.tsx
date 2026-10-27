@@ -8,7 +8,7 @@ import {
   HeartHandshake, Handshake, Compass, Code, Server, Cpu, Bot, Map, Globe, Languages, Telescope, FlaskConical, Mountain,
   Cloud, Fish, Calculator, FileCheck, FileText, Truck, PartyPopper, Waves, Anchor, Key, Pickaxe, Fuel, Wind, Construction,
   Scan, Apple, Paintbrush, Video, Radio, Clapperboard, Pen, Shirt, Gamepad2, Flag, Wand, School, Tag, Thermometer,
-  UserCheck, MessageSquare, Phone,
+  UserCheck, MessageSquare, Phone, Search,
   type LucideIcon,
 } from "lucide-react";
 
@@ -23,7 +23,7 @@ const ICONS: Record<string, LucideIcon> = {
   HeartHandshake, Handshake, Compass, Code, Server, Cpu, Bot, Map, Globe, Languages, Telescope, FlaskConical, Mountain,
   Cloud, Fish, Calculator, FileCheck, FileText, Truck, PartyPopper, Waves, Anchor, Key, Pickaxe, Fuel, Wind, Construction,
   Scan, Apple, Paintbrush, Video, Radio, Clapperboard, Pen, Shirt, Gamepad2, Flag, Wand, School, Tag, Thermometer,
-  UserCheck, MessageSquare, Phone,
+  UserCheck, MessageSquare, Phone, Search,
 };
 
 export const ICON_NAMES = Object.keys(ICONS);

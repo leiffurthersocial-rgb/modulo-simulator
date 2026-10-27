@@ -105,6 +105,9 @@ export function scenario(def: ScenarioDef): GameAction {
       if (approach.cost && !pay(ctx, approach.cost)) return { text: "You can't afford that.", tone: "bad" };
       const outcome = pickOutcome(ctx, approach.outcomes);
       if (!outcome) return;
+      const flags = ctx.state.flags;
+      flags.scenariosRun = Number(flags.scenariosRun ?? 0) + 1;
+      flags[`scn:${def.id}:${approach.id}`] = true;
       applyEffects(outcome.effects, ctx);
       if (ctx.state.status !== "alive") return { quiet: true, text: "" };
       if (outcome.next) trigger(ctx, outcome.next);
